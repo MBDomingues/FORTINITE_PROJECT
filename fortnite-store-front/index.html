@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fortnite Shop</title>
+	<link rel="icon" type="image/png" href="assets/images/favicon.svg"/>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="assets/css/home.css">
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Anton&display=swap" rel="stylesheet">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark sticky-top">
+        <div class="container-fluid px-4">
+            <a class="navbar-brand" href="#">
+                <img src="/assets/images/Logo.png" alt="Logo Fortnite Shop">
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+                <div class="d-flex gap-2" id="nav-itens">
+                    </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container py-4">
+        <h2 class="section-title">Destaques do dia</h2>
+        <div id="featuredCarousel" class="carousel slide" data-bs-ride="carousel">
+            <div class="carousel-indicators">
+                <button type="button" data-bs-target="#featuredCarousel" data-bs-slide-to="0" class="active"></button>
+                <button type="button" data-bs-target="#featuredCarousel" data-bs-slide-to="1"></button>
+                <button type="button" data-bs-target="#featuredCarousel" data-bs-slide-to="2"></button>
+                <button type="button" data-bs-target="#featuredCarousel" data-bs-slide-to="3"></button>
+                <button type="button" data-bs-target="#featuredCarousel" data-bs-slide-to="4"></button>
+            </div>
+            <div class="carousel-inner" id="carouselItems">
+            </div>
+            <button class="carousel-control-prev" type="button" data-bs-target="#featuredCarousel" data-bs-slide="prev">
+                <span class="carousel-control-prev-icon"></span>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#featuredCarousel" data-bs-slide="next">
+                <span class="carousel-control-next-icon"></span>
+            </button>
+        </div>
+
+        <div class="modal fade" id="itemModal" tabindex="-1" aria-labelledby="itemModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="itemModalLabel">
+                            <i class="bi bi-box-seam"></i> Detalhes do Item
+                        </h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="item-modal-image" id="modal-item-image">
+                            <div class="item-modal-badges">
+                                <span class="badge bg-primary" id="modal-item-badge-new" style="display: none;"></span>
+                                <span class="badge bg-success" id="modal-item-badge-sale" style="display: none;"></span>
+                            </div>
+                            <div class="item-modal-rarity">
+                                <span class="badge" id="modal-item-rarity">Raridade</span>
+                            </div>
+                        </div>
+
+                        <div class="item-availability" id="modal-item-availability">
+                            <i class="bi bi-check-circle-fill"></i>
+                            <div>
+                                <strong id="modal-availability-title">Disponível na Loja</strong>
+                                <div style="font-size: 0.9rem; color: rgba(255, 255, 255, 0.7);" id="modal-availability-text">
+                                    Este item está disponível para compra agora
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="item-modal-header-content mb-3">
+                            <div class="item-title-section">
+                                <h3 id="modal-item-name">Nome do Item</h3>
+                                <div class="item-type-label">
+                                    <i class="bi bi-tag" id="modal-item-type-icon"></i>
+                                    <span id="modal-item-type">Tipo</span>
+                                </div>
+                            </div>
+                            <div class="item-price-section">
+                                <span class="item-price-large" id="modal-item-price">1,500</span>
+                                <div class="item-price-label">V-Bucks</div>
+                            </div>
+                        </div>
+
+                        <div class="item-info-section">
+                            <h5><i class="bi bi-info-circle"></i> Descrição</h5>
+                            <p class="item-description" id="modal-item-description">
+                                Descrição do item...
+                            </p>
+                        </div>
+
+                        <div class="item-info-section">
+                            <h5><i class="bi bi-list-check"></i> Detalhes</h5>
+                            <div class="item-details-grid">
+                                <div class="item-detail-card">
+                                    <div class="item-detail-label">Raridade</div>
+                                    <div class="item-detail-value" id="modal-detail-rarity"></div>
+                                </div>
+                                <div class="item-detail-card">
+                                    <div class="item-detail-label">Categoria</div>
+                                    <div class="item-detail-value" id="modal-detail-category"></div>
+                                </div>
+                                <div class="item-detail-card">
+                                    <div class="item-detail-label">Adicionado em</div>
+                                    <div class="item-detail-value" id="modal-detail-date"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <div class="item-actions w-100">
+                            <button type="button" class="btn-buy-item" id="btn-buy">
+                                <i class="bi bi-cart-plus"></i>
+                                <span>Comprar Agora</span>
+                            </button>
+                            <button type="button" class="btn-devolver-item" id="btn-devolver" style="display: none;">
+                                <i class="bi bi-arrow-counterclockwise"></i>
+                                <span>Devolver Item</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade" id="userProfileModal" tabindex="-1" aria-labelledby="userProfileModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="userProfileModalLabel">
+                            <i class="bi bi-person-circle"></i> Perfil do Usuário
+                        </h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body p-3">
+                        <div class="text-center">
+                            <div class="profile-avatar-large" id="modal-avatar"></div>
+                            <h3 id="modal-user-name"></h3>
+                        </div>
+
+                        <div class="profile-stats">
+                            <div class="stat-card">
+                                <span class="stat-value" id="stat-items">0</span>
+                                <span class="stat-label">Itens</span>
+                            </div>
+                            <div class="stat-card">
+                                <span class="stat-value" id="stat-vbucks">0</span>
+                                <span class="stat-label">V-Bucks</span>
+                            </div>
+                        </div>
+
+                        <div class="profile-info-section">
+                            <h5><i class="bi bi-info-circle"></i> Informações</h5>
+                            <div class="profile-info-row">
+                                <span class="profile-info-label">Email</span>
+                                <span class="profile-info-value" id="modal-user-email">john@example.com</span>
+                            </div>
+                        </div>
+                        
+                        <div class="profile-info-section" id="modal-tabs-section">
+                            <ul class="nav nav-tabs profile-modal-tabs" id="profileTabs" role="tablist">
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link active" id="profile-tab-items-tab" data-bs-toggle="tab" data-bs-target="#profile-tab-items" type="button" role="tab">
+                                        <i class="bi bi-box-seam"></i> Itens Adquiridos
+                                    </button>
+                                </li>
+                                <li class="nav-item" role="presentation" id="modal-history-section" style="display: none;">
+                                    <button class="nav-link" id="profile-tab-history-tab" data-bs-toggle="tab" data-bs-target="#profile-tab-history" type="button" role="tab">
+                                        <i class="bi bi-receipt"></i> Histórico
+                                    </button>
+                                </li>
+                            </ul>
+
+                            <div class="tab-content mt-3">
+                                <div class="tab-pane fade show active" id="profile-tab-items" role="tabpanel">
+                                    <div class="user-items-preview" id="modal-user-items">
+                                        </div>
+                                </div>
+                                
+                                <div class="tab-pane fade" id="profile-tab-history" role="tabpanel">
+                                    <div class="history-list" id="modal-user-history">
+                                        </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <ul class="nav nav-tabs nav-tabs-custom justify-content-center mt-5" id="shopTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="shop-tab" data-bs-toggle="tab" data-bs-target="#shop-content" type="button" role="tab">
+                    <i class="bi bi-cart3"></i> Loja
+                </button>
+            </li>
+            <li class="nav-item" role="presentation" id="my-items-tab-container" style="display: none;">
+                <button class="nav-link" id="my-items-tab" data-bs-toggle="tab" data-bs-target="#my-items-content" type="button" role="tab">
+                    <i class="bi bi-collection-fill"></i> Meus Itens
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="all-items-tab" data-bs-toggle="tab" data-bs-target="#all-items-content" type="button" role="tab">
+                    <i class="bi bi-grid-3x3-gap"></i> Todos os Itens
+                </button>
+            </li>
+            <li class="nav-item" role="presentation" id="users-tab-container" style="display: none;">
+                <button class="nav-link" id="users-tab" data-bs-toggle="tab" data-bs-target="#users-content" type="button" role="tab">
+                    <i class="bi bi-people"></i> Usuários
+                </button>
+            </li>
+        </ul>
+        
+        <div class="shop-section">
+            <div class="tab-content" id="shopTabContent">
+
+                <div class="tab-pane fade show active" id="shop-content" role="tabpanel">
+                    <h2 class="section-title"> Loja de Itens</h2>
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-4">
+                            <label for="shop-typeFilter" class="form-label">Tipo</label>
+                            <select class="form-select" id="shop-typeFilter">
+                                <option value="">Todos</option>
+                                <option value="Traje">Skin (Traje)</option>
+                                <option value="Gesto">Emote (Gesto)</option>
+                                <option value="Picareta">Picareta</option>
+                                <option value="Asa-delta">Asa Delta</option>
+                                <option value="Acessório para as Costas">Mochila</option>
+                                <option value="Sapatos">Sapatos</option>
+                                <option value="Envelopamento">Envelopamento</option>
+                                <option value="Mascote">Mascote</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="shop-rarityFilter" class="form-label">Raridade</label>
+                            <select class="form-select" id="shop-rarityFilter">
+                                <option value="">Todas</option>
+                                <option value="serie">Série (Coleção)</option>
+                                <option value="legendary">Lendário</option>
+                                <option value="epic">Épico</option>
+                                <option value="rare">Raro</option>
+                                <option value="uncommon">Incomum</option>
+                                <option value="common">Comum</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="shop-searchInput" class="form-label">Buscar</label>
+                            <input type="text" class="form-control" id="shop-searchInput" placeholder="Nome do cosmético...">
+                        </div>
+                    </div>
+                    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4 products-grid" id="shop-grid"></div>
+                </div>
+                
+                <div class="tab-pane fade" id="my-items-content" role="tabpanel">
+                    <h2 class="section-title">Meus Itens Adquiridos</h2>
+                    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4 products-grid" id="my-items-grid">
+                        </div>
+                </div>
+
+                <div class="tab-pane fade" id="all-items-content" role="tabpanel">
+                    <h2 class="section-title">Todos os Cosméticos</h2>
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-4">
+                            <label for="all-typeFilter" class="form-label">Tipo</label>
+                            <select class="form-select" id="all-typeFilter">
+                                <option value="">Todos</option>
+                                <option value="Traje">Skin (Traje)</option>
+                                <option value="Gesto">Emote (Gesto)</option>
+                                <option value="Picareta">Picareta</option>
+                                <option value="Asa-delta">Asa Delta</option>
+                                <option value="Acessório para as Costas">Mochila</option>
+                                <option value="Sapatos">Sapatos</option>
+                                <option value="Envelopamento">Envelopamento</option>
+                                <option value="Mascote">Mascote</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="all-rarityFilter" class="form-label">Raridade</label>
+                            <select class="form-select" id="all-rarityFilter">
+                                <option value="">Todas</option>
+                                <option value="serie">Série (Coleção)</option>
+                                <option value="legendary">Lendário</option>
+                                <option value="epic">Épico</option>
+                                <option value="rare">Raro</option>
+                                <option value="uncommon">Incomum</option>
+                                <option value="common">Comum</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="all-searchInput" class="form-label">Buscar</label>
+                            <input type="text" class="form-control" id="all-searchInput" placeholder="Nome do cosmético...">
+                        </div>
+                    </div>
+                    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4 products-grid" id="all-items-grid"></div>
+                </div>
+
+                <div class="tab-pane fade" id="users-content" role="tabpanel">
+                    <h2 class="section-title">Gerenciar Usuários</h2>
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-6">
+                            <label for="userSearchInput" class="form-label">Buscar Usuário</label>
+                            <input type="text" class="form-control" id="userSearchInput" placeholder="Nome ou email...">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="userSortFilter" class="form-label">Ordenar por</label>
+                            <select class="form-select" id="userSortFilter">
+                                <option value="name">Nome</option>
+                                <option value="email">Email</option>
+                                <option value="date">Data de Cadastro</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="users-list" id="users-list"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
+    <script src="assets/js/perfil.js"></script> 
+    <script src="assets/js/vitrine.js"></script>
+    
+    <script>
+        const user = localStorageManager.getToken(); 
+        console.log(user);
+        const minhaVitrine = new VitrineJS(user);
+    </script>
+</body>
+</html>

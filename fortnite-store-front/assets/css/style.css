@@ -1,0 +1,104 @@
+body {
+    font-family: 'Anton', sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    color: #fff;
+}
+
+.navbar-brand img {
+    height: 40px;
+    margin-right: 10px;
+}
+
+/* ------------------------------------------- */
+/* --- Estilização SweetAlert2 (Tema Site) --- */
+/* ------------------------------------------- */
+
+/* Fundo escuro e borrado atrás do modal */
+.swal2-backdrop-show {
+	background: rgba(0, 0, 0, 0.7) !important;
+	backdrop-filter: blur(5px) !important;
+}
+
+/* O container principal do modal (efeito glassmorphism) */
+.swal2-popup {
+	background: rgba(0, 0, 0, 0.75) !important; /* Fundo escuro */
+	backdrop-filter: blur(15px) !important; /* Efeito de vidro */
+	border-radius: 20px !important; /* Bordas (como .shop-section) */
+	border: 1px solid rgba(255, 255, 255, 0.2) !important;
+	box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4) !important;
+}
+
+/* Cor do texto do título */
+.swal2-title {
+	color: #fff !important;
+}
+
+/* Cor do texto do conteúdo (descrição) */
+.swal2-html-container {
+	color: rgba(255, 255, 255, 0.8) !important;
+}
+
+/* --- Botões --- */
+
+/* Botão de Confirmação (igual ao .btn-signup) */
+.swal2-confirm {
+	background: linear-gradient(45deg, #00d4ff, #7b2ff7) !important;
+	color: #fff !important;
+	border: none !important;
+	border-radius: 25px !important;
+	padding: 0.6em 1.8em !important;
+	letter-spacing: 1px !important;
+	transition: all 0.3s ease !important;
+}
+
+.swal2-confirm:hover {
+	transform: translateY(-2px) !important;
+	box-shadow: 0 8px 20px rgba(123, 47, 247, 0.4) !important;
+}
+
+/* Botão de Cancelar (igual ao .btn-login) */
+.swal2-cancel {
+	background: transparent !important;
+	color: #fff !important;
+	border: 2px solid #fff !important;
+	border-radius: 25px !important;
+	padding: 0.6em 1.8em !important;
+	transition: all 0.3s ease !important;
+}
+
+.swal2-cancel:hover {
+	background: #fff !important;
+	color: #764ba2 !important; /* Cor do seu :hover */
+	transform: translateY(-2px) !important;
+}
+
+/* Remove a sombra padrão dos botões */
+.swal2-styled:focus {
+	box-shadow: none !important;
+}
+
+
+/* --- Ícones --- */
+
+/* Ícone de Sucesso (cor ciano) */
+.swal2-icon.swal2-success .swal2-success-ring {
+	border-color: #00d4ff !important;
+}
+.swal2-icon.swal2-success [class^=swal2-success-line] {
+	background-color: #00d4ff !important;
+}
+
+/* Ícone de Erro (cor vermelha/laranja da rarity-serie) */
+.swal2-icon.swal2-error {
+	border-color: #ff6b00 !important;
+}
+.swal2-icon.swal2-error [class^=swal2-x-mark-line] {
+	background-color: #ff6b00 !important;
+}
+
+/* Ícone de Aviso (cor amarela da rarity-legendary) */
+.swal2-icon.swal2-warning {
+	border-color: #ffd700 !important;
+	color: #fff !important; /* Deixa o "!" branco */
+}

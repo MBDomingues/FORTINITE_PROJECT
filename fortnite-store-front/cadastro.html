@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Criar Conta - Fortnite Shop</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="icon" type="image/png" href="assets/images/favicon.svg"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="assets/css/cadastro.css">
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Anton&display=swap" rel="stylesheet">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container-fluid px-4">
+            <a class="navbar-brand" href="/index.html">
+               <img src="/assets/images/Logo.png" alt="Logo Fortnite Shop">
+            </a>
+        </div>
+    </nav>
+
+    <div class="signup-container">
+        <div class="signup-card">
+            
+            <div class="signup-header">
+                <h2><i class="bi bi-person-plus"></i> Criar Conta</h2>
+                <p>Junte-se à comunidade Fortnite</p>
+            </div>
+
+            <div id="alert-error" class="alert alert-danger d-none" role="alert">
+                <i class="bi bi-exclamation-triangle-fill"></i>
+                <span id="error-message">Erro ao criar conta</span>
+            </div>
+
+            <div id="alert-success" class="alert alert-success d-none" role="alert">
+                <i class="bi bi-check-circle-fill"></i>
+                <span id="success-message">Conta criada com sucesso!</span>
+            </div>
+
+            <form id="signup-form">
+                <div class="form-floating">
+                    <input type="text" class="form-control" id="name" placeholder="Username" required>
+                    </div>
+
+                <div class="form-floating">
+                    <input type="email" class="form-control" id="email" placeholder="seu@email.com" required>
+                </div>
+
+                <div class="form-floating">
+                    <input type="password" class="form-control" id="password" placeholder="Senha" required minlength="8">
+                </div>
+
+                <div class="form-floating">
+                    <input type="password" class="form-control" id="confirm-password" placeholder="Confirmar Senha" required>
+                </div>
+
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="terms" required>
+                    <label class="form-check-label" for="terms">
+                        Concordo com os <a href="#" target="_blank">Termos de Uso</a> e <a href="#" target="_blank">Política de Privacidade</a>
+                    </label>
+                </div>
+
+                <button type="submit" class="btn btn-signup-submit" id="btn-cadastro">
+                    <span id="btn-text">Criar Conta</span>
+                </button>
+            </form>
+
+            <div class="login-link">
+                Já tem uma conta? <a href="login.html">Fazer login</a>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/assets/js/perfil.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const userPerfil = new UserPerfil();
+        });
+    </script>
+</body>
+</html>

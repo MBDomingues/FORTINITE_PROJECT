@@ -1,0 +1,345 @@
+/* ==========================================================================
+   CONFIGURAÇÕES GERAIS DA PÁGINA
+   Define a fonte, o fundo degradê e centraliza o conteúdo verticalmente.
+   ========================================================================== */
+body {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 100px 0 50px;
+}
+
+/* ==========================================================================
+   BARRA DE NAVEGAÇÃO (NAVBAR)
+   Estilo fixo no topo com efeito de vidro (backdrop-filter).
+   ========================================================================== */
+.navbar {
+    background: rgba(0, 0, 0, 0.8) !important;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    position: fixed;
+    top: 0;
+    width: 100%;
+    z-index: 1000;
+}
+
+/* Estilo da Logo (Texto com gradiente) */
+.navbar-brand {
+    font-size: 1.8rem;
+    font-weight: bold;
+    background: linear-gradient(45deg, #00d4ff, #7b2ff7);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+/* ==========================================================================
+   CARTÃO DE CADASTRO (CARD)
+   Container centralizado com efeito glassmorphism (fundo translúcido).
+   ========================================================================== */
+.signup-container {
+    width: 100%;
+    max-width: 500px;
+    margin: 0 auto;
+    padding: 2rem 1rem;
+}
+
+.signup-card {
+    background: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(20px);
+    border-radius: 25px;
+    padding: 3rem 2.5rem;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    border: 2px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Cabeçalho do formulário (Título e Subtítulo) */
+.signup-header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.signup-header h2 {
+    font-size: 2.5rem;
+    font-weight: bold;
+    background: linear-gradient(45deg, #00d4ff, #7b2ff7);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 0.5rem;
+}
+
+.signup-header p {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 1rem;
+}
+
+/* ==========================================================================
+   CAMPOS DE FORMULÁRIO (INPUTS)
+   Estilização dos inputs flutuantes e seus estados (foco, placeholder).
+   ========================================================================== */
+.form-floating {
+    margin-bottom: 1.5rem;
+}
+
+.form-floating .form-control {
+    background: rgba(255, 255, 255, 0.1);
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    color: #fff;
+    border-radius: 12px;
+    padding: 1rem 1rem;
+    height: 60px;
+}
+
+/* Estado de foco do input (borda azul neon) */
+.form-floating .form-control:focus {
+    background: rgba(255, 255, 255, 0.15);
+    border-color: #00d4ff;
+    color: #fff;
+    box-shadow: 0 0 0 0.25rem rgba(0, 212, 255, 0.25);
+}
+
+.form-floating .form-control::placeholder {
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.form-floating label {
+    color: rgba(255, 255, 255, 0.7);
+    padding: 1rem 1rem;
+}
+
+/* Ajuste da cor do label quando o input está ativo */
+.form-floating .form-control:focus ~ label,
+.form-floating .form-control:not(:placeholder-shown) ~ label {
+    color: #00d4ff;
+}
+
+/* ==========================================================================
+   INDICADOR DE FORÇA DA SENHA
+   Barra visual que muda de cor conforme a complexidade.
+   ========================================================================== */
+.password-strength {
+    height: 4px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 2px;
+    margin-top: -1rem;
+    margin-bottom: 1rem;
+    overflow: hidden;
+}
+
+.password-strength-bar {
+    height: 100%;
+    width: 0;
+    transition: all 0.3s ease;
+    border-radius: 2px;
+}
+
+/* Cores para os níveis de força */
+.strength-weak { 
+    width: 33%; 
+    background: #ff6b6b; /* Vermelho */
+}
+
+.strength-medium { 
+    width: 66%; 
+    background: #ffd93d; /* Amarelo */
+}
+
+.strength-strong { 
+    width: 100%; 
+    background: #51cf66; /* Verde */
+}
+
+/* Lista de requisitos da senha (texto pequeno) */
+.password-requirements {
+    font-size: 0.85rem;
+    color: rgba(255, 255, 255, 0.6);
+    margin-top: -1rem;
+    margin-bottom: 1rem;
+}
+
+.password-requirements i {
+    font-size: 0.7rem;
+    margin-right: 0.3rem;
+}
+
+.requirement-met {
+    color: #51cf66; /* Verde quando atendido */
+}
+
+/* ==========================================================================
+   CHECKBOX E TERMOS
+   Estilização personalizada da caixa de seleção.
+   ========================================================================== */
+.form-check {
+    margin-bottom: 1.5rem;
+}
+
+.form-check-input {
+    background-color: rgba(255, 255, 255, 0.1);
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    width: 1.2rem;
+    height: 1.2rem;
+    cursor: pointer;
+}
+
+.form-check-input:checked {
+    background-color: #00d4ff;
+    border-color: #00d4ff;
+}
+
+.form-check-input:focus {
+    box-shadow: 0 0 0 0.25rem rgba(0, 212, 255, 0.25);
+}
+
+.form-check-label {
+    color: rgba(255, 255, 255, 0.9);
+    margin-left: 0.5rem;
+    cursor: pointer;
+    font-size: 0.9rem;
+}
+
+.form-check-label a {
+    color: #00d4ff;
+    text-decoration: none;
+}
+
+.form-check-label a:hover {
+    color: #7b2ff7;
+    text-decoration: underline;
+}
+
+/* ==========================================================================
+   BOTÕES DE AÇÃO
+   Botão principal de cadastro e botão social (Google).
+   ========================================================================== */
+.btn-signup-submit {
+    width: 100%;
+    background: linear-gradient(45deg, #00d4ff, #7b2ff7);
+    border: none;
+    border-radius: 12px;
+    padding: 1rem;
+    font-weight: 600;
+    font-size: 1.1rem;
+    color: #fff;
+    transition: all 0.3s ease;
+    margin-bottom: 1rem;
+}
+
+.btn-signup-submit:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 30px rgba(0, 212, 255, 0.4);
+}
+
+.btn-signup-submit:active {
+    transform: translateY(0);
+}
+
+.btn-signup-submit:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+}
+
+/* Botão do Google (Estilo transparente) */
+.btn-google {
+    width: 100%;
+    background: rgba(255, 255, 255, 0.1);
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 12px;
+    padding: 0.9rem;
+    font-weight: 600;
+    color: #fff;
+    transition: all 0.3s ease;
+}
+
+.btn-google:hover {
+    background: rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 255, 255, 0.5);
+    color: #fff;
+}
+
+/* ==========================================================================
+   ELEMENTOS AUXILIARES
+   Divisor, links de rodapé e alertas.
+   ========================================================================== */
+/* Linha divisória "OU" */
+.divider {
+    display: flex;
+    align-items: center;
+    text-align: center;
+    margin: 1.5rem 0;
+}
+
+.divider::before,
+.divider::after {
+    content: '';
+    flex: 1;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.divider span {
+    padding: 0 1rem;
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 0.9rem;
+}
+
+/* Link "Já tem uma conta?" */
+.login-link {
+    text-align: center;
+    margin-top: 2rem;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.login-link a {
+    color: #00d4ff;
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.login-link a:hover {
+    color: #7b2ff7;
+    text-decoration: underline;
+}
+
+/* Alertas de Sucesso/Erro */
+.alert {
+    border-radius: 12px;
+    border: none;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    margin-bottom: 1.5rem;
+}
+
+.alert-danger {
+    background: rgba(220, 53, 69, 0.2);
+    color: #ff6b6b;
+    border: 1px solid rgba(220, 53, 69, 0.4);
+}
+
+.alert-success {
+    background: rgba(25, 135, 84, 0.2);
+    color: #51cf66;
+    border: 1px solid rgba(25, 135, 84, 0.4);
+}
+
+/* ==========================================================================
+   RESPONSIVIDADE
+   Ajustes para telas de celular (Mobile).
+   ========================================================================== */
+@media (max-width: 576px) {
+    .signup-card {
+        padding: 2rem 1.5rem;
+    }
+
+    .signup-header h2 {
+        font-size: 2rem;
+    }
+
+    body {
+        padding: 80px 0 30px;
+    }
+}

@@ -1,0 +1,36 @@
+version: '3.8'
+
+services:
+  # 1. Serviço do Banco de Dados Oracle (COM HEALTHCHECK)
+  db:
+    image: gvenzl/oracle-xe:21-slim
+    container_name: oracle-db-local
+    ports:
+      - "1521:1521"
+    environment:
+      - ORACLE_PASSWORD=mysecretpassword
+    volumes:
+      - oracle-data:/opt/oracle/oradata
+    healthcheck:
+      test: ["CMD-SHELL", "sqlplus -S system/mysecretpassword@//localhost:1521/XEPDB1 <<< \"select 1 from dual;\" | grep 1"]
+      interval: 10s
+      timeout: 10s
+      retries: 30
+
+  # 2. Serviço da sua Aplicação Spring Boot (COM ESPERA)
+  app:
+    build: .
+    container_name: fortnite-api-app
+    ports:
+      - "8080:8080"
+    environment:
+      # Usa o perfil "docker" para carregar o application-docker.properties
+      - SPRING_PROFILES_ACTIVE=docker
+      # As outras propriedades (URL, defer-initialization)
+      # agora estão no application-docker.properties
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  oracle-data:

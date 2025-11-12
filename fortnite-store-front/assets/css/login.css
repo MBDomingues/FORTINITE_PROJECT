@@ -1,0 +1,286 @@
+/* ==========================================================================
+   CONFIGURAÇÕES GERAIS
+   Define a fonte base, o degradê de fundo e o alinhamento central da página.
+   ========================================================================== */
+body {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* ==========================================================================
+   BARRA DE NAVEGAÇÃO (NAVBAR)
+   Estilização da barra superior com efeito de vidro.
+   ========================================================================== */
+.navbar {
+    background: rgba(0, 0, 0, 0.8) !important;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    position: absolute;
+    top: 0;
+    width: 100%;
+}
+
+/* Estilização da Logo (Texto com gradiente) */
+.navbar-brand {
+    font-size: 1.8rem;
+    font-weight: bold;
+    background: linear-gradient(45deg, #00d4ff, #7b2ff7);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+/* ==========================================================================
+   CARTÃO DE LOGIN
+   Container centralizado com efeito glassmorphism.
+   ========================================================================== */
+.login-container {
+    width: 100%;
+    max-width: 450px;
+    margin: 0 auto;
+    padding: 2rem 1rem;
+}
+
+.login-card {
+    background: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(20px);
+    border-radius: 25px;
+    padding: 3rem 2.5rem;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    border: 2px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Cabeçalho do Login (Título e Subtítulo) */
+.login-header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.login-header h2 {
+    font-size: 2.5rem;
+    font-weight: bold;
+    background: linear-gradient(45deg, #00d4ff, #7b2ff7);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 0.5rem;
+}
+
+.login-header p {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 1rem;
+}
+
+/* ==========================================================================
+   CAMPOS DE FORMULÁRIO (INPUTS)
+   Estilização dos inputs flutuantes (floating labels).
+   ========================================================================== */
+.form-floating {
+    margin-bottom: 1.5rem;
+}
+
+.form-floating .form-control {
+    background: rgba(255, 255, 255, 0.1);
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    color: #fff;
+    border-radius: 12px;
+    padding: 1rem 1rem;
+    height: 60px;
+}
+
+/* Estado de foco do input */
+.form-floating .form-control:focus {
+    background: rgba(255, 255, 255, 0.15);
+    border-color: #00d4ff;
+    color: #fff;
+    box-shadow: 0 0 0 0.25rem rgba(0, 212, 255, 0.25);
+}
+
+.form-floating .form-control::placeholder {
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.form-floating label {
+    color: rgba(255, 255, 255, 0.7);
+    padding: 1rem 1rem;
+}
+
+/* Cor do label quando o input está ativo */
+.form-floating .form-control:focus ~ label,
+.form-floating .form-control:not(:placeholder-shown) ~ label {
+    color: #00d4ff;
+}
+
+/* ==========================================================================
+   CHECKBOX "LEMBRAR DE MIM"
+   Estilização personalizada.
+   ========================================================================== */
+.form-check {
+    margin-bottom: 1.5rem;
+}
+
+.form-check-input {
+    background-color: rgba(255, 255, 255, 0.1);
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    width: 1.2rem;
+    height: 1.2rem;
+    cursor: pointer;
+}
+
+.form-check-input:checked {
+    background-color: #00d4ff;
+    border-color: #00d4ff;
+}
+
+.form-check-input:focus {
+    box-shadow: 0 0 0 0.25rem rgba(0, 212, 255, 0.25);
+}
+
+.form-check-label {
+    color: rgba(255, 255, 255, 0.9);
+    margin-left: 0.5rem;
+    cursor: pointer;
+}
+
+/* ==========================================================================
+   BOTÕES DE AÇÃO
+   Botão de entrar e botão social (Google).
+   ========================================================================== */
+.btn-login-submit {
+    width: 100%;
+    background: linear-gradient(45deg, #00d4ff, #7b2ff7);
+    border: none;
+    border-radius: 12px;
+    padding: 1rem;
+    font-weight: 600;
+    font-size: 1.1rem;
+    color: #fff;
+    transition: all 0.3s ease;
+    margin-bottom: 1rem;
+}
+
+.btn-login-submit:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 30px rgba(0, 212, 255, 0.4);
+}
+
+.btn-login-submit:active {
+    transform: translateY(0);
+}
+
+/* Estado desabilitado (Loading) */
+.btn-login-submit:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+}
+
+.btn-google {
+    width: 100%;
+    background: rgba(255, 255, 255, 0.1);
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 12px;
+    padding: 0.9rem;
+    font-weight: 600;
+    color: #fff;
+    transition: all 0.3s ease;
+}
+
+.btn-google:hover {
+    background: rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 255, 255, 0.5);
+    color: #fff;
+}
+
+/* ==========================================================================
+   LINKS E ELEMENTOS AUXILIARES
+   "Esqueci minha senha", "Cadastre-se", Divisores e Alertas.
+   ========================================================================== */
+.forgot-password {
+    color: #00d4ff;
+    text-decoration: none;
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
+}
+
+.forgot-password:hover {
+    color: #7b2ff7;
+    text-decoration: underline;
+}
+
+/* Linha divisória "OU" */
+.divider {
+    display: flex;
+    align-items: center;
+    text-align: center;
+    margin: 1.5rem 0;
+}
+
+.divider::before,
+.divider::after {
+    content: '';
+    flex: 1;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.divider span {
+    padding: 0 1rem;
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 0.9rem;
+}
+
+.signup-link {
+    text-align: center;
+    margin-top: 2rem;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.signup-link a {
+    color: #00d4ff;
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.signup-link a:hover {
+    color: #7b2ff7;
+    text-decoration: underline;
+}
+
+/* Alertas de Sucesso/Erro */
+.alert {
+    border-radius: 12px;
+    border: none;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    margin-bottom: 1.5rem;
+}
+
+.alert-danger {
+    background: rgba(220, 53, 69, 0.2);
+    color: #ff6b6b;
+    border: 1px solid rgba(220, 53, 69, 0.4);
+}
+
+.alert-success {
+    background: rgba(25, 135, 84, 0.2);
+    color: #51cf66;
+    border: 1px solid rgba(25, 135, 84, 0.4);
+}
+
+/* ==========================================================================
+   RESPONSIVIDADE
+   Ajustes para dispositivos móveis.
+   ========================================================================== */
+@media (max-width: 576px) {
+    .login-card {
+        padding: 2rem 1.5rem;
+    }
+
+    .login-header h2 {
+        font-size: 2rem;
+    }
+}
