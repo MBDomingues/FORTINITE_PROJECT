@@ -7,7 +7,7 @@ class VitrineJS {
     constructor(userToken) {
         // Inicialização de estados e configurações
         this.user = userToken || null; // Token JWT do usuário
-        this.API_BASE_URL = 'http://localhost:8080/api/v1'; // Endpoint base da API
+        this.API_BASE_URL = 'http://130.213.12.104:8080/api/v1'; // Endpoint base da API
         
         // Arrays e flags para controle de dados da Loja
         this.itens = []; 

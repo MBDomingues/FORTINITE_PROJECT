@@ -5,8 +5,8 @@
 class UserPerfil {
     constructor() {
         // Definição dos endpoints da API
-        this.API_LOGIN = 'http://localhost:8080/api/v1/auth/login';
-        this.API_CADASTRO = 'http://localhost:8080/api/v1/auth/cadastro';
+        this.API_LOGIN = 'http://130.213.12.104:8080/api/v1/auth/login';
+        this.API_CADASTRO = 'http://130.213.12.104:8080/api/v1/auth/cadastro';
         
         // Inicialização das variáveis de estado do formulário
         this.email = '';
