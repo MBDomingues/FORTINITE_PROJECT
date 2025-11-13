@@ -69,13 +69,13 @@ public class FortniteSyncService {
 
 
     /**
-     * TAREFA AGENDADA DE PRODUÇÃO: Roda no Cron (4 AM).
+     * TAREFA AGENDADA DE PRODUÇÃO: Roda no Cron de uma em uma hora.
      * Este é o único @Scheduled que executa a lógica principal.
      */
-    @Scheduled(cron = "0 0 4 * * *") // Roda todos os dias às 4:00 AM
+    @Scheduled(cron = "0 0 * * * *")
     @Transactional
     public void runDailySync() {
-        System.out.println("AGENDADOR: Iniciando sincronização diária (4 AM)...");
+        System.out.println("AGENDADOR: Iniciando sincronização horária...");
         syncAllBaseCosmeticsAndStatus();
     }
 
