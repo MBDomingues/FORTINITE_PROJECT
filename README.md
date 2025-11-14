@@ -3,8 +3,17 @@
 ![Java](https://img.shields.io/badge/java-%23ED8B00.svg?style=for-the-badge&logo=openjdk&logoColor=white)
 ![Spring](https://img.shields.io/badge/spring-%236DB33F.svg?style=for-the-badge&logo=spring&logoColor=white)
 ![Oracle](https://img.shields.io/badge/Oracle-F80000?style=for-the-badge&logo=oracle&logoColor=white)
+![Flyway](https://img.shields.io/badge/Flyway-CC0200?style=for-the-badge&logo=flyway&logoColor=white)
+
+![HTML5](https://img.shields.io/badge/html5-%23E34F26.svg?style=for-the-badge&logo=html5&logoColor=white)
+![CSS3](https://img.shields.io/badge/css3-%231572B6.svg?style=for-the-badge&logo=css3&logoColor=white)
+![JavaScript](https://img.shields.io/badge/javascript-%23323330.svg?style=for-the-badge&logo=javascript&logoColor=%23F7DF1E)
+![Bootstrap](https://img.shields.io/badge/bootstrap-%238511FA.svg?style=for-the-badge&logo=bootstrap&logoColor=white)
+![SweetAlert2](https://img.shields.io/badge/SweetAlert2-%23fe5f5f.svg?style=for-the-badge&logo=sweetalert2&logoColor=white)
+
 ![Docker](https://img.shields.io/badge/docker-%230db7ed.svg?style=for-the-badge&logo=docker&logoColor=white)
 ![Azure](https://img.shields.io/badge/azure-%230072C6.svg?style=for-the-badge&logo=microsoftazure&logoColor=white)
+![Nginx](https://img.shields.io/badge/nginx-%23009639.svg?style=for-the-badge&logo=nginx&logoColor=white)
 
 Aplicação Web Full Stack desenvolvida como parte do processo seletivo para **Desenvolvedor Web** no **Sistema ESO**. O sistema simula uma loja virtual de cosméticos do jogo Fortnite, consumindo dados reais de uma API externa e gerenciando compras, créditos e usuários.
 
@@ -22,22 +31,23 @@ A aplicação está rodando em infraestrutura de nuvem na **Microsoft Azure**:
 ## 🛠️ Tecnologias Utilizadas
 
 ### Backend (API)
-* **Java 21 (LTS):** Linguagem base.
-* **Spring Boot 3:** Framework principal.
-* **Spring Security + JWT:** Autenticação e Autorização Stateless.
-* **Spring Data JPA (Hibernate):** Persistência de dados.
-* **Flyway:** Versionamento e migração de banco de dados.
+* **Java 21 (LTS):** Linguagem base moderna e performática.
+* **Spring Boot 3:** Framework principal para injeção de dependência e web.
+* **Spring Security + JWT:** Autenticação e Autorização Stateless segura.
+* **Spring Data JPA (Hibernate):** Persistência de dados e ORM.
+* **Flyway:** Versionamento e migração segura de banco de dados.
 * **Oracle Database 21c XE:** Banco de dados relacional (rodando em container).
 
 ### Frontend (Cliente)
-* **HTML5 & CSS3:** Estrutura e estilização.
-* **JavaScript (Vanilla ES6+):** Lógica do cliente, consumo de API (Fetch) e gerenciamento de DOM.
-* **Bootstrap 5:** Responsividade e componentes de UI.
+* **HTML5 & CSS3:** Estrutura semântica e estilização customizada.
+* **JavaScript (Vanilla ES6+):** Lógica do cliente, consumo de API (Fetch) e manipulação do DOM sem frameworks pesados.
+* **Bootstrap 5:** Framework CSS para responsividade ágil e componentes de UI.
+* **SweetAlert2:** Biblioteca para alertas, modais e pop-ups elegantes e responsivos (substituindo o `alert()` nativo).
 
 ### Infraestrutura & DevOps
-* **Docker & Docker Compose:** Orquestração dos serviços (App + Banco).
-* **Azure Virtual Machine (Linux Ubuntu):** Servidor de produção.
-* **Nginx:** Servidor web reverso para o Frontend.
+* **Docker & Docker Compose:** Orquestração dos serviços (App + Banco) garantindo o mesmo ambiente em dev e prod.
+* **Azure Virtual Machine (Linux Ubuntu):** Servidor de produção na nuvem.
+* **Nginx:** Servidor web de alto desempenho atuando como proxy reverso para o Frontend.
 
 ---
 
@@ -71,8 +81,8 @@ O projeto foi 100% dockerizado para facilitar a execução em qualquer máquina.
 
 1.  **Clone o repositório:**
     ```bash
-    git clone [https://github.com/SEU_USUARIO/NOME_DO_REPO.git](https://github.com/SEU_USUARIO/NOME_DO_REPO.git)
-    cd NOME_DA_PASTA
+    git clone [https://github.com/MBDomingues/FORTINITE_PROJECT.git](https://github.com/MBDomingues/FORTINITE_PROJECT.git)
+    cd FORTINITE_PROJECT
     ```
 
 2.  **Inicie a aplicação:**
@@ -105,4 +115,4 @@ O projeto foi 100% dockerizado para facilitar a execução em qualquer máquina.
 
 ---
 
-**Desenvolvido por Mateus [Seu Sobrenome]**
+**Desenvolvido por Mateus Domingues**
