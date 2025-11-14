@@ -68,17 +68,22 @@ public class FortniteSyncService {
     }
 
 
-    // PRODUÇÃO: Roda toda hora cheia (Ex: 13:00, 14:00, 15:00...)
-    // O 'zone' garante que seguimos o horário de Brasília, caso precise debugar logs com horário local
-    @Scheduled(cron = "0 0 * * * *", zone = "America/Sao_Paulo")
+    // 1. A CADA HORA (no minuto 05): Atualiza Loja e Novos (Rápido)
+    // Ex: 13:05, 14:05... 21:05 (Logo após a loja virar)
+    @Scheduled(cron = "0 5 * * * *", zone = "America/Sao_Paulo")
     @Transactional
-    public void runDailySync() {
-        // Mudei o texto para facilitar a busca no log depois
-        System.out.println("AGENDADOR: [HORA CHEIA] Iniciando sincronização horária...");
+    public void updateShopStatus() {
+        System.out.println("AGENDADOR: [MINUTO 05] Atualizando apenas status da Loja/Novos...");
+        syncShopAndNewStatusInternal();
+    }
+    
+    @Scheduled(cron = "0 0 5 * * *", zone = "America/Sao_Paulo")
+    @Transactional
+    public void fullDatabaseSync() {
+        System.out.println("AGENDADOR: [05:00 AM] Iniciando Sincronização COMPLETA...");
 
         syncAllBaseCosmeticsAndStatus();
     }
-
 
     /**
      * TAREFA PRINCIPAL UNIFICADA: Sincroniza a base de dados (UPSERT) e o status.
@@ -96,7 +101,6 @@ public class FortniteSyncService {
                     response.getData() != null &&
                     response.getData().getBr() != null) {
 
-                // Pega a lista correta de dentro de data.br
                 List<CosmeticoApiDTO> todosOsItens = response.getData().getBr();
 
                 for (CosmeticoApiDTO dto : todosOsItens) {

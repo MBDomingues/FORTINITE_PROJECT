@@ -821,11 +821,11 @@ class VitrineJS {
         if (!this.carrouselItems) return;
         if (this.itens.length === 0) {
            this.carrouselItems.innerHTML = `
-                                            <div class="carousel-item active h-100">
-                                                <div class="d-flex flex-column justify-content-center align-items-center h-100">
-                                                    <i class="bi bi-cart-x text-secondary mb-3" style="font-size: 4rem; opacity: 0.5;"></i>
-                                                    <p class="text-center text-light fs-4 fw-bold m-0">Nenhum item em destaque</p>
-                                                    <p class="text-center text-secondary mt-2">Aguarde as novidades da loja!</p>
+                                            <div class="carousel-item active" style="height: 450px;">
+                                                <div class="d-flex flex-column justify-content-center align-items-center h-100 w-100">
+                                                    <i class="bi bi-cart-x mb-3" style="font-size: 5rem; color: rgba(255,255,255,0.3);"></i>
+                                                    <h3 class="text-white fw-bold text-uppercase" style="letter-spacing: 1px;">Sem Destaques</h3>
+                                                    <p class="text-white-50 fs-5">Aguarde as novidades da loja!</p>
                                                 </div>
                                             </div>
                                         `;
