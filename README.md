@@ -15,7 +15,7 @@
 ![Azure](https://img.shields.io/badge/azure-%230072C6.svg?style=for-the-badge&logo=microsoftazure&logoColor=white)
 ![Nginx](https://img.shields.io/badge/nginx-%23009639.svg?style=for-the-badge&logo=nginx&logoColor=white)
 
-Aplicação Web Full Stack desenvolvida como parte do processo seletivo para **Desenvolvedor Web** no **Sistema ESO**. O sistema simula uma loja virtual de cosméticos do jogo Fortnite, consumindo dados reais de uma API externa e gerenciando compras, créditos e usuários.
+Aplicação Web Full Stack. O sistema simula uma loja virtual de cosméticos do jogo Fortnite, consumindo dados reais de uma API externa e gerenciando compras, créditos e usuários.
 
 ---
 
@@ -96,9 +96,10 @@ O projeto foi 100% dockerizado para facilitar a execução em qualquer máquina.
     * Acompanhe os logs. O Oracle levará um tempo para ficar "Healthy".
     * Após a API iniciar, aguarde cerca de **30 segundos** para a sincronização inicial dos itens.
     * Procure no log por: `SUCESSO: Sincronização base e status concluída`.
+    * Caso ocorra falha na sincronização inicial devido a problemas de hardware, realize a limpeza do container e reinicie a execução.
 
 4.  **Acesse:**
-    * **Frontend:** Abra a pasta `fortnite-frontend/index.html` (Recomendado usar Live Server do VS Code) ou ajuste a URL no `auth.js` para `localhost:8080`.
+    * **Frontend:** Abra a pasta `fortnite-frontend/index.html` (Recomendado usar Live Server do VS Code) ou ajuste a URL nos arquivos JavaScript para `localhost:8080`.
     * **API (Swagger/JSON):** [http://localhost:8080/api/v1/cosmeticos](http://localhost:8080/api/v1/cosmeticos)
 
 ---
