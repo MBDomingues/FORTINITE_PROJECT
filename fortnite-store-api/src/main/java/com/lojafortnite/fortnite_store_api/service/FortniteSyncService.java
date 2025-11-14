@@ -68,14 +68,14 @@ public class FortniteSyncService {
     }
 
 
-    /**
-     * TAREFA AGENDADA DE PRODUÇÃO: Roda no Cron de uma em uma hora.
-     * Este é o único @Scheduled que executa a lógica principal.
-     */
-    @Scheduled(cron = "0 0 * * * *")
+    // PRODUÇÃO: Roda toda hora cheia (Ex: 13:00, 14:00, 15:00...)
+    // O 'zone' garante que seguimos o horário de Brasília, caso precise debugar logs com horário local
+    @Scheduled(cron = "0 0 * * * *", zone = "America/Sao_Paulo")
     @Transactional
     public void runDailySync() {
-        System.out.println("AGENDADOR: Iniciando sincronização horária...");
+        // Mudei o texto para facilitar a busca no log depois
+        System.out.println("AGENDADOR: [HORA CHEIA] Iniciando sincronização horária...");
+
         syncAllBaseCosmeticsAndStatus();
     }
 

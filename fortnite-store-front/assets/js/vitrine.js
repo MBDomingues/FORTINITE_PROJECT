@@ -353,7 +353,13 @@ class VitrineJS {
         this.cosmeticosGrid.innerHTML = '';
 
         if (itensFiltrados.length === 0) {
-            this.cosmeticosGrid.innerHTML = '<div class="col-12"><p class="text-center text-light fs-5">Nenhum item encontrado.</p></div>';
+           this.cosmeticosGrid.innerHTML = `
+                                            <div class="col-12 w-100 d-flex flex-column justify-content-center align-items-center" style="grid-column: 1 / -1; min-height: 300px;">
+                                                <i class="bi bi-search text-secondary mb-3" style="font-size: 3rem; opacity: 0.5;"></i>
+                                                <p class="text-center text-light fs-5 m-0">Nenhum item encontrado.</p>
+                                                <p class="text-center text-secondary small mt-2">Tente ajustar os filtros ou buscar por outro termo.</p>
+                                            </div>
+                                        `;
             return;
         }
 
@@ -489,7 +495,13 @@ class VitrineJS {
         this.allItemsGrid.innerHTML = '';
         
         if (this.todosOsItens.length === 0) {
-            this.allItemsGrid.innerHTML = '<div class="col-12"><p class="text-center text-light fs-5">Nenhum item encontrado.</p></div>';
+            this.allItemsGrid.innerHTML = `
+                                            <div class="col-12 w-100 d-flex flex-column justify-content-center align-items-center" style="grid-column: 1 / -1; min-height: 300px;">
+                                                <i class="bi bi-search text-secondary mb-3" style="font-size: 3rem; opacity: 0.5;"></i>
+                                                <p class="text-center text-light fs-5 m-0">Nenhum item encontrado.</p>
+                                                <p class="text-center text-secondary small mt-2">Tente ajustar os filtros ou buscar por outro termo.</p>
+                                            </div>
+                                        `;
             return;
         }
 
@@ -808,7 +820,15 @@ class VitrineJS {
     preencheCarrousel() {
         if (!this.carrouselItems) return;
         if (this.itens.length === 0) {
-            this.carrouselItems.innerHTML = '<div class="carousel-item active"><p class="text-center text-light">Nenhum item disponível</p></div>';
+           this.carrouselItems.innerHTML = `
+                                            <div class="carousel-item active h-100">
+                                                <div class="d-flex flex-column justify-content-center align-items-center h-100">
+                                                    <i class="bi bi-cart-x text-secondary mb-3" style="font-size: 4rem; opacity: 0.5;"></i>
+                                                    <p class="text-center text-light fs-4 fw-bold m-0">Nenhum item em destaque</p>
+                                                    <p class="text-center text-secondary mt-2">Aguarde as novidades da loja!</p>
+                                                </div>
+                                            </div>
+                                        `;
             return;
         }
         const top5MaisCaros = [...this.itens]
