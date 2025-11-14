@@ -14,21 +14,22 @@
     --shadow-lg: 0 10px 40px rgba(0, 0, 0, 0.4);/* Sombra intensa */
 }
 
-.body, html {
+body, html {
     margin: 0 !important;
     padding: 0 !important;
-
+    overflow-x: hidden;
 }
 
-/* Evita que o site "pule" para a direita quando o scroll some ao abrir o modal */
 body.modal-open {
+    overflow-y: auto !important;
     padding-right: 0 !important;
-    overflow-y: auto; /* Opcional: mantém o scroll se preferir, senão o Bootstrap trava */
 }
 
-/* Garante que a navbar fixa também não pule */
+body.modal-open .navbar,
+body.modal-open .navbar.sticky-top,
 body.modal-open .navbar.fixed-top {
     padding-right: 0 !important;
+    margin-right: 0 !important;
 }
 
 /* ========================================

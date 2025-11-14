@@ -266,7 +266,13 @@ class VitrineJS {
                 itensContainer.innerHTML += itemCardHTML;
             });
         } else {
-            itensContainer.innerHTML = '<p class="text-center text-light">Nenhum item adquirido.</p>';
+            itensContainer.innerHTML = `
+                                        <div class="col-12 w-100 d-flex flex-column justify-content-center align-items-center" style="grid-column: 1 / -1; min-height: 200px;">
+                                            <i class="bi bi-box-seam text-secondary mb-3" style="font-size: 3rem; opacity: 0.5;"></i>
+                                            <p class="text-center text-light fs-5 m-0">Nenhum item adquirido.</p>
+                                            <p class="text-center text-secondary small mt-2">Explore a loja para começar sua coleção!</p>
+                                        </div>
+                                    `;
         }
 
         // Lógica de exibição da aba Histórico: 
@@ -444,7 +450,14 @@ class VitrineJS {
         url.searchParams.append('sort', 'dataInclusao,desc'); 
 
         try {
-            this.allItemsGrid.innerHTML = '<div class="col-12"><p class="text-center text-light fs-5"><span class="spinner-border spinner-border-sm"></span> Buscando...</p></div>';
+            this.allItemsGrid.innerHTML = `
+                <div class="col-12 w-100 d-flex flex-column justify-content-center align-items-center" style="grid-column: 1 / -1; min-height: 300px;">
+                    <div class="spinner-border text-primary mb-3" role="status" style="width: 3rem; height: 3rem;">
+                        <span class="visually-hidden">Carregando...</span>
+                    </div>
+                    <p class="text-light fs-5 m-0">Buscando...</p>
+                </div>
+            `;
 
             const response = await fetch(url.toString(), { headers }); 
             if (!response.ok) throw new Error(`Erro HTTP: ${response.status}`);
@@ -521,7 +534,13 @@ class VitrineJS {
         const itensAdquiridos = this.userData ? (this.userData.itensAdquiridos || []) : [];
 
         if (itensAdquiridos.length === 0) {
-            this.myItemsGrid.innerHTML = '<div class="col-12"><p class="text-center text-light fs-5">Você ainda não adquiriu nenhum item.</p></div>';
+            this.myItemsGrid.innerHTML = `
+                                        <div class="col-12 w-100 d-flex flex-column justify-content-center align-items-center" style="grid-column: 1 / -1; min-height: 300px;">
+                                            <i class="bi bi-box-seam text-secondary mb-3" style="font-size: 3rem; opacity: 0.5;"></i>
+                                            <p class="text-center text-light fs-5 m-0">Você ainda não adquiriu nenhum item.</p>
+                                            <p class="text-center text-secondary small mt-2">Visite a loja para expandir sua coleção!</p>
+                                        </div>
+                                    `;
             return;
         }
 
@@ -654,7 +673,6 @@ class VitrineJS {
                 <table class="table table-dark table-striped table-hover align-middle text-nowrap custom-mobile-table">
                     <thead>
                         <tr>
-                            <th scope="col">ID</th>
                             <th scope="col">Email</th>
                             <th scope="col">V-Bucks</th>
                             <th scope="col" class="text-end">Ação</th>
@@ -663,8 +681,7 @@ class VitrineJS {
                     <tbody>
                         ${usuariosFiltrados.map(user => `
                             <tr>
-                                <td data-label="ID" scope="row" class="fw-bold">#${user.id}</td>
-                                <td data-label="Email">${this.sanitizarTexto(user.email)}</td>
+                                <td data-label="Email">${this.sanitizarTexto(user.nome)}</td>
                                 <td data-label="V-Bucks" class="fw-bold">${user.creditos.toLocaleString('pt-BR')}</td>
                                 <td data-label="Ação" class="text-end">
                                     <button class="btn btn-sm btn-info btn-visualizar-usuario" data-userid="${user.id}">
@@ -1209,9 +1226,10 @@ class VitrineJS {
     mostrarErro(mensagem, gridElement = this.cosmeticosGrid) {
         if (gridElement) {
             gridElement.innerHTML = `
-                <div class="col-12 d-flex justify-content-center">
-                    <p class="text-center text-danger fs-5">${this.sanitizarTexto(mensagem)}</p>
-                </div>
+                <div class="col-12 w-100 d-flex flex-column justify-content-center align-items-center" style="grid-column: 1 / -1; min-height: 150px;">
+					<i class="bi bi-exclamation-triangle text-danger mb-3" style="font-size: 2rem;"></i>
+					<p class="text-center text-danger fs-5 m-0">${this.sanitizarTexto(mensagem)}</p>
+				</div>
             `;
         }
     }
