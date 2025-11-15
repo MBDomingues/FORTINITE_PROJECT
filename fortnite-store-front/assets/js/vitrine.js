@@ -1477,14 +1477,14 @@ class VitrineJS {
         if (!modal) return;
         const imgContainer = modal.querySelector('#modal-item-image');
         if (imgContainer) {
-            imgContainer.className = 'modal-image-container'; 
+            imgContainer.className = 'modal-image-container d-flex justify-content-center'; 
             imgContainer.removeAttribute('style');
             if (item.cores && Array.isArray(item.cores) && item.cores.length > 0) {
                 imgContainer.setAttribute('style', this.gerarEstiloBackground(item.cores));
             } else {
                 imgContainer.classList.add(`bg-rarity-${this.obterClasseRaridade(item.raridade)}`);
             }
-            imgContainer.innerHTML = item.urlImagem ? `<img src="${this.sanitizarUrl(item.urlImagem)}" alt="${this.sanitizarTexto(item.nome)}" style="width: 100%; height: 100%; object-fit: contain; display: block;" />` : '<div class="placeholder-image">🎮</div>';
+            imgContainer.innerHTML = item.urlImagem ? `<img src="${this.sanitizarUrl(item.urlImagem)}" alt="${this.sanitizarTexto(item.nome)}" style="width: 50%; height: 50%; object-fit: contain; display: block;" />` : '<div class="placeholder-image">🎮</div>';
         }
 
         const badgeNew = modal.querySelector('#modal-item-badge-new');
