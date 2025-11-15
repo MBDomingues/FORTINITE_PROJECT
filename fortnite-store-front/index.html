@@ -30,15 +30,20 @@
     </nav>
 
     <div class="container py-4">
-        <h2 class="section-title">Destaques do dia</h2>
+        <h2 class="section-title">Pacotões do dia</h2>
         <div id="featuredCarousel" class="carousel slide" data-bs-ride="carousel">
+            <div class="carousel-indicators">
+                </div>
             <div class="carousel-inner" id="carouselItems">
-            </div>
-            <button class="carousel-control-prev" type="button" data-bs-target="#featuredCarousel" data-bs-slide="prev">
-                <span class="carousel-control-prev-icon"></span>
+                </div>
+        </div>
+
+        <div id="carousel-external-controls" class="d-flex justify-content-center align-items-center gap-3 mt-4" style="display: none;">
+            <button class="btn-external-nav" type="button" data-bs-target="#featuredCarousel" data-bs-slide="prev">
+                <i class="bi bi-chevron-left"></i>
             </button>
-            <button class="carousel-control-next" type="button" data-bs-target="#featuredCarousel" data-bs-slide="next">
-                <span class="carousel-control-next-icon"></span>
+            <button class="btn-external-nav" type="button" data-bs-target="#featuredCarousel" data-bs-slide="next">
+                <i class="bi bi-chevron-right"></i>
             </button>
         </div>
 

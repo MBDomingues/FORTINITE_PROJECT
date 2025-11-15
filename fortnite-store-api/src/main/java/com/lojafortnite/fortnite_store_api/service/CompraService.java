@@ -1,7 +1,7 @@
 package com.lojafortnite.fortnite_store_api.service;
 
-import com.fasterxml.jackson.core.type.TypeReference; // Importe isto
-import com.fasterxml.jackson.databind.ObjectMapper; // Importe isto
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.lojafortnite.fortnite_store_api.entity.*;
 import com.lojafortnite.fortnite_store_api.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +19,6 @@ public class CompraService {
     @Autowired private ItemAdquiridoRepository itemAdquiridoRepository;
     @Autowired private HistoricoTransacaoRepository historicoRepository;
 
-    // Precisamos do ObjectMapper para ler o JSON dos itens do bundle
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     private static final String ERRO_NAO_ENCONTRADO = "Item/Usuário não encontrado.";
@@ -28,59 +27,31 @@ public class CompraService {
 
     @Transactional
     public void comprarCosmetico(Long usuarioId, String cosmeticoId) {
-
+        // ... (A LÓGICA DE COMPRA PERMANECE A MESMA QUE JÁ FUNCIONA) ...
         Usuario usuario = usuarioRepository.findById(usuarioId)
                 .orElseThrow(() -> new RuntimeException(ERRO_NAO_ENCONTRADO));
 
         Cosmetico cosmeticoPrincipal = cosmeticoRepository.findById(cosmeticoId)
                 .orElseThrow(() -> new RuntimeException(ERRO_NAO_ENCONTRADO));
 
-        // 1. Verifica se o usuário JÁ TEM esse item específico
         if (itemAdquiridoRepository.existsByUsuarioIdAndCosmeticoId(usuarioId, cosmeticoId)) {
             throw new RuntimeException(ERRO_JA_ADQUIRIDO);
         }
 
-        // 2. Checagem de Saldo
         if (usuario.getCreditos() < cosmeticoPrincipal.getPreco()) {
             throw new RuntimeException(ERRO_SALDO);
         }
 
-        // 3. Processar Compra (Debitar Saldo)
         usuario.setCreditos(usuario.getCreditos() - cosmeticoPrincipal.getPreco());
-        usuarioRepository.save(usuario); // Salva o novo saldo
+        usuarioRepository.save(usuario);
 
-        // 4. Registrar Posse do Item Principal (O que foi clicado na loja)
         adicionarItemAoUsuario(usuario, cosmeticoPrincipal);
 
-        // 5. Registrar Histórico (Apenas 1 registro da transação financeira)
         registrarHistorico(usuario, cosmeticoPrincipal, HistoricoTransacao.TipoTransacao.COMPRA, cosmeticoPrincipal.getPreco());
 
-        // 6. LÓGICA DE BUNDLE: Entregar os itens filhos "de brinde"
-        // (Esta é a parte nova que faltava no seu código)
+        // Lógica de adicionar filhos do Bundle na compra
         if (Boolean.TRUE.equals(cosmeticoPrincipal.getIsBundle())) {
-            String jsonItens = cosmeticoPrincipal.getBundleItemsJson();
-
-            if (jsonItens != null && !jsonItens.isEmpty()) {
-                try {
-                    // Converte a String JSON do banco em uma Lista de IDs
-                    List<String> idsFilhos = objectMapper.readValue(jsonItens, new TypeReference<List<String>>(){});
-
-                    for (String idFilho : idsFilhos) {
-                        // Verifica se o usuário já tem o item filho (pode ter comprado avulso antes)
-                        boolean jaTemFilho = itemAdquiridoRepository.existsByUsuarioIdAndCosmeticoId(usuarioId, idFilho);
-
-                        if (!jaTemFilho) {
-                            // Busca o objeto do item filho no banco e adiciona
-                            cosmeticoRepository.findById(idFilho).ifPresent(itemFilho -> {
-                                adicionarItemAoUsuario(usuario, itemFilho);
-                            });
-                        }
-                    }
-                } catch (Exception e) {
-                    // Logar erro, mas não travar a compra principal se possível
-                    System.err.println("Erro ao entregar itens do bundle: " + e.getMessage());
-                }
-            }
+            processarItensDoBundle(usuarioId, cosmeticoPrincipal, true);
         }
     }
 
@@ -90,12 +61,12 @@ public class CompraService {
         Usuario usuario = usuarioRepository.findById(usuarioId)
                 .orElseThrow(() -> new RuntimeException(ERRO_NAO_ENCONTRADO));
 
-        // 1. Encontrar o registro de posse
+        // 1. Encontrar o registro de posse do item principal (o que está sendo devolvido)
         ItemAdquirido itemAdquirido = itemAdquiridoRepository
                 .findByUsuarioIdAndCosmeticoId(usuarioId, cosmeticoId)
                 .orElseThrow(() -> new RuntimeException("Cosmético não possuído."));
 
-        // 2. Dados para estorno
+        // 2. Recupera o objeto cosmético para saber preço e se é bundle
         Cosmetico cosmetico = itemAdquirido.getCosmetico();
         Integer valorEstorno = cosmetico.getPreco();
 
@@ -103,25 +74,59 @@ public class CompraService {
         usuario.setCreditos(usuario.getCreditos() + valorEstorno);
         usuarioRepository.save(usuario);
 
-        // 4. Remover Posse
+        // 4. Remover Posse do Item Principal
         itemAdquiridoRepository.delete(itemAdquirido);
 
         // 5. Registrar Histórico
         registrarHistorico(usuario, cosmetico, HistoricoTransacao.TipoTransacao.DEVOLUCAO, valorEstorno);
 
-        // NOTA: A devolução de bundles é complexa.
-        // Se o usuário devolver um bundle, deveríamos remover os itens filhos também?
-        // Por simplicidade, neste código, removemos apenas o item principal.
-        // Se quiser remover os filhos, teria que repetir a lógica de leitura do JSON aqui e deletar um por um.
+        // --- 6. NOVA LÓGICA: REMOVER ITENS DO BUNDLE ---
+        if (Boolean.TRUE.equals(cosmetico.getIsBundle())) {
+            // Passamos 'false' para indicar que é uma remoção
+            processarItensDoBundle(usuarioId, cosmetico, false);
+        }
     }
 
-    // --- Métodos Auxiliares para limpar o código ---
+    private void processarItensDoBundle(Long usuarioId, Cosmetico bundle, boolean isCompra) {
+        String jsonItens = bundle.getBundleItemsJson();
+
+        if (jsonItens != null && !jsonItens.isEmpty()) {
+            try {
+                List<String> idsFilhos = objectMapper.readValue(jsonItens, new TypeReference<List<String>>() {});
+
+                for (String idFilho : idsFilhos) {
+                    if (isCompra) {
+                        // --- LÓGICA DE ADICIONAR (COMPRA) ---
+                        boolean jaTemFilho = itemAdquiridoRepository.existsByUsuarioIdAndCosmeticoId(usuarioId, idFilho);
+                        if (!jaTemFilho) {
+                            cosmeticoRepository.findById(idFilho).ifPresent(itemFilho -> {
+                                // Precisamos do objeto Usuario completo para salvar
+                                usuarioRepository.findById(usuarioId).ifPresent(u -> adicionarItemAoUsuario(u, itemFilho));
+                            });
+                        }
+                    } else {
+                        // --- LÓGICA DE REMOVER (DEVOLUÇÃO) ---
+                        // Busca o registro de posse desse item filho específico para este usuário
+                        itemAdquiridoRepository.findByUsuarioIdAndCosmeticoId(usuarioId, idFilho)
+                                .ifPresent(itemFilhoAdquirido -> {
+                                    // Deleta o item filho do inventário
+                                    itemAdquiridoRepository.delete(itemFilhoAdquirido);
+                                });
+                    }
+                }
+            } catch (Exception e) {
+                System.err.println("Erro ao processar itens do bundle (Ação: " + (isCompra ? "Compra" : "Devolução") + "): " + e.getMessage());
+                // Em produção, você pode decidir lançar uma exceção aqui para fazer rollback de tudo
+            }
+        }
+    }
+
+    // --- Métodos Auxiliares ---
 
     private void adicionarItemAoUsuario(Usuario usuario, Cosmetico cosmetico) {
         ItemAdquirido item = new ItemAdquirido();
         item.setUsuario(usuario);
         item.setCosmetico(cosmetico);
-        // A chave única evita duplicidade no banco
         item.setUniqueUserCosmeticoKey(usuario.getId() + "-" + cosmetico.getId());
         itemAdquiridoRepository.save(item);
     }
