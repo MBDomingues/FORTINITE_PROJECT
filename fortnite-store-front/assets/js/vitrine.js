@@ -16,45 +16,29 @@ class VitrineJS {
         this.historico = [];
         this.historicoCarregado = false;
         this.itensAdquiridosSet = new Set();
+        
         this.carouselIndicators = null;
         this.itemModalElement = null;
         this.currentItemInModal = null;
 
         this.coresPadraoRaridade = {
-            // Comum (Cinza)
-            'comum': '#b0b0b0',
-            'common': '#b0b0b0',
-            
-            // Incomum (Verde)
-            'incomum': '#60aa3a',
-            'uncommon': '#60aa3a',
-            
-            // Raro (Azul)
-            'raro': '#4ec1f3',
-            'rare': '#4ec1f3',
-            
-            // Épico (Roxo)
-            'épico': '#bf6ee0',
-            'epic': '#bf6ee0',
-            
-            // Lendário (Dourado/Laranja)
-            'lendário': '#e9a748',
-            'legendary': '#e9a748'
+            'comum': '#b0b0b0', 'common': '#b0b0b0',
+            'incomum': '#60aa3a', 'uncommon': '#60aa3a',
+            'raro': '#4ec1f3', 'rare': '#4ec1f3',
+            'épico': '#bf6ee0', 'epic': '#bf6ee0',
+            'lendário': '#e9a748', 'legendary': '#e9a748'
         };
 
         this.init();
     }
 
     async init() {
-        // --- START LOADING ---
         Swal.fire({
             title: 'Carregando Loja...',
             html: 'Espere um pouco enquanto buscamos os itens para você!',
-            allowOutsideClick: false,
-            allowEscapeKey: false,
+            allowOutsideClick: false, allowEscapeKey: false,
             didOpen: () => { Swal.showLoading(); },
-            background: 'rgba(0, 0, 0, 0.9)',
-            color: '#fff',
+            background: 'rgba(0, 0, 0, 0.9)', color: '#fff',
             customClass: { popup: 'border-neon' }
         });
         this.pegaElementos();
@@ -83,49 +67,107 @@ class VitrineJS {
         this.btnDevolver = document.getElementById('btn-devolver');
         if (this.btnDevolver) this.btnDevolver.addEventListener('click', () => this.handleDevolucaoClick());
         
-        // Filtros Loja
+        // --- FILTROS ABA LOJA ---
         this.shopTypeFilter = document.getElementById('shop-typeFilter');
         this.shopRarityFilter = document.getElementById('shop-rarityFilter');
         this.shopSearchInput = document.getElementById('shop-searchInput');
+        this.shopDateStart = document.getElementById('shop-dateStart');
+        this.shopDateEnd = document.getElementById('shop-dateEnd');
+        this.shopCheckNew = document.getElementById('shop-checkNew');
+        this.shopCheckForSale = document.getElementById('shop-checkForSale');
+        this.shopCheckPromo = document.getElementById('shop-checkPromo');
+        this.shopClearBtn = document.getElementById('shop-clearFilters');
 
-        if (this.shopTypeFilter) this.shopTypeFilter.addEventListener('change', () => this.renderizaItens());
-        if (this.shopRarityFilter) this.shopRarityFilter.addEventListener('change', () => this.renderizaItens());
-        if (this.shopSearchInput) this.shopSearchInput.addEventListener('input', () => this.renderizaItens());
+        [this.shopTypeFilter, this.shopRarityFilter, this.shopSearchInput, this.shopDateStart, this.shopDateEnd, this.shopCheckNew, this.shopCheckForSale, this.shopCheckPromo].forEach(input => {
+            if(input) input.addEventListener((input.type === 'text' || input.type === 'date') ? 'input' : 'change', () => this.renderizaItens());
+        });
+
+        if(this.shopClearBtn) {
+            this.shopClearBtn.addEventListener('click', () => this.limparFiltrosLoja());
+        }
         
-        // Aba Todos
+        // --- FILTROS ABA TODOS OS ITENS ---
         this.allItemsTab = document.getElementById('all-items-tab');
         this.allItemsGrid = document.getElementById('all-items-grid');
         this.allTypeFilter = document.getElementById('all-typeFilter');
         this.allRarityFilter = document.getElementById('all-rarityFilter');
         this.allSearchInput = document.getElementById('all-searchInput');
+        this.allDateStart = document.getElementById('all-dateStart');
+        this.allDateEnd = document.getElementById('all-dateEnd');
+        this.allCheckNew = document.getElementById('all-checkNew');
+        this.allCheckForSale = document.getElementById('all-checkForSale');
+        this.allCheckPromo = document.getElementById('all-checkPromo');
+        this.allClearBtn = document.getElementById('all-clearFilters');
 
-        if (this.allItemsTab && this.allItemsGrid) {
-            this.allItemsTab.addEventListener('show.bs.tab', () => this.handleAllItemsTabFocus());
+        [this.allTypeFilter, this.allRarityFilter, this.allSearchInput, this.allDateStart, this.allDateEnd, this.allCheckNew, this.allCheckForSale, this.allCheckPromo].forEach(input => {
+            if(input) {
+                const evt = (input.type === 'text' || input.type === 'date') ? 'input' : 'change';
+                if (input.type === 'text') {
+                    let timeout;
+                    input.addEventListener('input', () => { clearTimeout(timeout); timeout = setTimeout(() => this.buscaTodosOsItens(), 500); });
+                } else {
+                    input.addEventListener(evt, () => this.buscaTodosOsItens());
+                }
+            }
+        });
+
+        if(this.allClearBtn) {
+            this.allClearBtn.addEventListener('click', () => this.limparFiltrosTodos());
         }
 
-        // Aba Usuários e Meus Itens
+        if (this.allItemsTab) this.allItemsTab.addEventListener('show.bs.tab', () => { if (!this.todosOsItensCarregados) this.buscaTodosOsItens(); });
+
+        // --- ABA MEUS ITENS ---
+        this.myItemsTabContainer = document.getElementById('my-items-tab-container');
+        this.myItemsTab = document.getElementById('my-items-tab');
+        this.myItemsGrid = document.getElementById('my-items-grid');
+        
+        // Correção: Adiciona o listener corretamente
+        if (this.myItemsTab) {
+            this.myItemsTab.addEventListener('show.bs.tab', () => this.renderizarMeusItens());
+        }
+
+        // --- ABA USUÁRIOS ---
         this.usersTabContainer = document.getElementById('users-tab-container');
         this.usersTab = document.getElementById('users-tab');
         this.usersListContainer = document.getElementById('users-list');
         this.userSearchInput = document.getElementById('userSearchInput');
         this.userSortFilter = document.getElementById('userSortFilter');
 
-        if (this.usersTab && this.usersListContainer) {
-            this.usersTab.addEventListener('show.bs.tab', () => this.handleUsersTabFocus());
-        }
+        if (this.usersTab) this.usersTab.addEventListener('show.bs.tab', () => this.handleUsersTabFocus());
         
-        this.myItemsTabContainer = document.getElementById('my-items-tab-container');
-        this.myItemsTab = document.getElementById('my-items-tab');
-        this.myItemsGrid = document.getElementById('my-items-grid');
-        
-        if (this.myItemsTab && this.myItemsGrid) {
-            this.myItemsTab.addEventListener('show.bs.tab', () => this.renderizarMeusItens());
-        }
-
+        // Modal Perfil
         this.historyTabButton = document.getElementById('profile-tab-history-tab');
         this.historyListContainer = document.getElementById('modal-user-history');
         this.itemsTabButton = document.getElementById('profile-tab-items-tab'); 
     }
+
+    // --- MÉTODOS DE LIMPEZA ---
+    limparFiltrosLoja() {
+        if(this.shopSearchInput) this.shopSearchInput.value = '';
+        if(this.shopTypeFilter) this.shopTypeFilter.value = '';
+        if(this.shopRarityFilter) this.shopRarityFilter.value = '';
+        if(this.shopDateStart) this.shopDateStart.value = '';
+        if(this.shopDateEnd) this.shopDateEnd.value = '';
+        if(this.shopCheckNew) this.shopCheckNew.checked = false;
+        if(this.shopCheckForSale) this.shopCheckForSale.checked = false;
+        if(this.shopCheckPromo) this.shopCheckPromo.checked = false;
+        this.renderizaItens();
+    }
+
+    limparFiltrosTodos() {
+        if(this.allSearchInput) this.allSearchInput.value = '';
+        if(this.allTypeFilter) this.allTypeFilter.value = '';
+        if(this.allRarityFilter) this.allRarityFilter.value = '';
+        if(this.allDateStart) this.allDateStart.value = '';
+        if(this.allDateEnd) this.allDateEnd.value = '';
+        if(this.allCheckNew) this.allCheckNew.checked = false;
+        if(this.allCheckForSale) this.allCheckForSale.checked = false;
+        if(this.allCheckPromo) this.allCheckPromo.checked = false;
+        this.buscaTodosOsItens();
+    }
+
+    // --- DADOS E AUTH ---
 
     async verificaUsuario() {
         if (this.user) {
@@ -155,6 +197,11 @@ class VitrineJS {
             }
             this.atualizaNavUsuario(data);
             this.buscaHistoricoUsuario();
+            
+            // --- CORREÇÃO IMPORTANTE: Renderiza meus itens assim que os dados chegam ---
+            if(this.myItemsGrid) {
+                this.renderizarMeusItens();
+            }
         })
         .catch(error => {
             this.user = null;
@@ -178,13 +225,53 @@ class VitrineJS {
         document.getElementById('nav-perfil-btn')?.addEventListener('click', () => this.preencherModalPerfil(this.userData));
     }
 
+    // --- RENDERIZAR MEUS ITENS (TAB) ---
+
+    renderizarMeusItens() {
+        if (!this.myItemsGrid) return;
+        this.myItemsGrid.innerHTML = ''; 
+        
+        // Garante que pegamos o array, mesmo se userData for nulo no inicio
+        const itensAdquiridos = this.userData ? (this.userData.itensAdquiridos || []) : [];
+
+        if (itensAdquiridos.length === 0) {
+            this.myItemsGrid.innerHTML = this.gerarHTMLVazio('Você ainda não adquiriu nenhum item.');
+            return;
+        }
+
+        // Normaliza os dados para o formato que a classe espera
+        let itensProcessados = itensAdquiridos.map(itemData => {
+            // Detecta se é bundle (pode vir como flag ou array de filhos)
+            const isBundle = itemData.isBundle || (itemData.bundleItems && itemData.bundleItems.length > 0);
+            
+            return new ValidadorItem(
+                itemData.id, itemData.nome, itemData.tipo, itemData.raridade,
+                itemData.preco, itemData.urlImagem, itemData.descricao,
+                itemData.isNew, itemData.isForSale, 
+                true, // isAdquirido
+                itemData.dataInclusao,
+                itemData.cores, 
+                isBundle, // Passa explicitamente se é bundle
+                itemData.bundleItems
+            ).validaDados();
+        });
+
+        // --- CHAMA COM TRUE para mostrar o Card Pai do Bundle ---
+        const listaFinal = this.organizarItensComBundles(itensProcessados, true);
+        
+        const fragmento = document.createDocumentFragment();
+        for (const item of listaFinal) {
+            fragmento.appendChild(this.criarCard(item));
+        }
+        this.myItemsGrid.appendChild(fragmento);
+    }
+
+    // ... (O restante do código abaixo permanece o mesmo, com o mapa de tipos corrigido) ...
+
     preencherModalPerfil(userData) {
         if (!userData) return;
-
         const email = userData.email || 'Usuário';
         const nomeUsuario = userData.nome || email.split('@')[0];
-        
-        // Preenche cabeçalho do modal
         document.getElementById('modal-avatar').innerHTML = `<i class="bi bi-file-person"></i>`;
         document.getElementById('modal-user-name').textContent = nomeUsuario;
         document.getElementById('stat-items').textContent = userData.itensAdquiridos?.length || 0;
@@ -196,28 +283,16 @@ class VitrineJS {
         
         if (itensAdquiridos.length > 0) {
             itensContainer.innerHTML = ''; 
-            
-            // Opcional: Se quiser ordenar os itens do perfil por cor também, descomente a linha abaixo:
-            // const listaOrdenada = this.organizarItensComBundles(itensAdquiridos, true); 
-            // e use 'listaOrdenada' no forEach ao invés de 'itensAdquiridos'
-
             itensAdquiridos.forEach(item => {
                 const imagem = item.urlImagem ? `<img src="${this.sanitizarUrl(item.urlImagem)}" alt="${item.nome}">` : '<i class="bi bi-question-lg"></i>';
-                
-                // --- Lógica de Cores Atualizada ---
                 let styleBackground = '';
                 let classeBackground = '';
-
-                // 1. Tenta usar as cores da API (Degradê)
                 if (item.cores && Array.isArray(item.cores) && item.cores.length > 0) {
                     styleBackground = `style="${this.gerarEstiloBackground(item.cores)}"`;
                 } else {
-                    // 2. Fallback para a classe CSS da Raridade
                     const classeRaridade = this.obterClasseRaridade(item.raridade || 'Comum');
                     classeBackground = `bg-rarity-${classeRaridade}`;
                 }
-                // ----------------------------------
-
                 itensContainer.innerHTML += `
                     <div class="user-item-mini-card">
                         <div class="user-item-mini-image ${classeBackground}" ${styleBackground}>
@@ -227,8 +302,6 @@ class VitrineJS {
                     </div>`;
             });
         } else {
-            // --- Mensagem Centralizada Corrigida ---
-            // grid-column: 1 / -1 garante que o aviso ocupe toda a largura do Grid
             itensContainer.innerHTML = `
                 <div class="d-flex flex-column justify-content-center align-items-center w-100" style="grid-column: 1 / -1; min-height: 200px; text-align: center;">
                     <i class="bi bi-box-seam text-secondary mb-3" style="font-size: 3rem; opacity: 0.5;"></i>
@@ -236,7 +309,6 @@ class VitrineJS {
                 </div>`;
         }
         
-        // Lógica do Histórico (Mantida)
         const historyTabContainer = document.getElementById('modal-history-section'); 
         if (this.user && this.userData && userData.id === this.userData.id) {
             if (historyTabContainer) historyTabContainer.style.display = 'block';
@@ -247,7 +319,7 @@ class VitrineJS {
             if (itemsTabButton) bootstrap.Tab.getOrCreateInstance(itemsTabButton).show();
         }
     }
-    
+
     async buscaItensDisponiveis() {
         const headers = { 'Content-Type': 'application/json' };
         if (this.user) headers['Authorization'] = `Bearer ${this.user}`;
@@ -276,29 +348,14 @@ class VitrineJS {
         }
     }
 
-    // ================================================================
-    // LÓGICA DE ORDENAÇÃO POR COR (HSL)
-    // ================================================================
-
-    /**
-     * Converte Hex (#RRGGBB) para HSL.
-     * Retorna o H (Hue/Matiz) de 0 a 360 e S (Saturação).
-     * Usamos isso para saber a posição da cor no arco-íris.
-     */
     hexToHSL(hex) {
         let result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})/i.exec(hex);
         if (!result) return { h: 0, s: 0, l: 0 };
-
-        let r = parseInt(result[1], 16) / 255;
-        let g = parseInt(result[2], 16) / 255;
-        let b = parseInt(result[3], 16) / 255;
-
+        let r = parseInt(result[1], 16) / 255, g = parseInt(result[2], 16) / 255, b = parseInt(result[3], 16) / 255;
         let max = Math.max(r, g, b), min = Math.min(r, g, b);
         let h, s, l = (max + min) / 2;
-
-        if (max === min) {
-            h = s = 0; // Acromático (Cinza/Preto/Branco)
-        } else {
+        if (max === min) { h = s = 0; } 
+        else {
             let d = max - min;
             s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
             switch (max) {
@@ -308,125 +365,60 @@ class VitrineJS {
             }
             h /= 6;
         }
-
         return { h: h * 360, s: s, l: l };
     }
 
-    /**
-     * Obtém a cor principal do item para fins de ordenação.
-     * 1. Tenta item.cores[0]
-     * 2. Tenta o fallback da raridade
-     * 3. Retorna preto se falhar
-     */
     obterCorOrdenacao(item) {
-        // 1. Verifica se a API retornou cores
         if (item.cores && Array.isArray(item.cores) && item.cores.length > 0) {
             let hex = item.cores[0];
-            // Remove alpha se existir (ex: #FF0000FF -> #FF0000)
             if (hex.length > 7) hex = hex.substring(0, 7);
             return hex;
         }
-
-        // 2. Fallback pela raridade
         const raridadeChave = (item.raridade || 'comum').toLowerCase();
-        
-        // Busca parcial (ex: "Série Ícones" busca "icon" ou "ícones")
         for (const [key, color] of Object.entries(this.coresPadraoRaridade)) {
             if (raridadeChave.includes(key)) return color;
         }
-
-        return '#808080'; // Cinza padrão fallback
+        return '#808080';
     }
 
-    /**
-     * Ordena a lista baseada no Espectro de Cores (Hue).
-     * Ordem: Vermelho -> Amarelo -> Verde -> Ciano -> Azul -> Roxo -> Rosa -> Vermelho
-     * Itens sem saturação (Cinzas/Pretos) vão para o final.
-     */
     ordenarPorCor(lista) {
         return lista.sort((a, b) => {
             const hexA = this.obterCorOrdenacao(a);
             const hexB = this.obterCorOrdenacao(b);
-
             const hslA = this.hexToHSL(hexA);
             const hslB = this.hexToHSL(hexB);
-
-            // 1. Separar Coloridos de Preto/Branco/Cinza
-            // Se a saturação for muito baixa (< 10%), joga pro final
             const isGrayscaleA = hslA.s < 0.10; 
             const isGrayscaleB = hslB.s < 0.10;
 
             if (isGrayscaleA && !isGrayscaleB) return 1;
             if (!isGrayscaleA && isGrayscaleB) return -1;
-
-            if (isGrayscaleA && isGrayscaleB) {
-                return hslB.l - hslA.l; // Ordena cinzas do Claro para o Escuro
-            }
-
-            // 2. Ordena pelo HUE (Matiz) - O Arco-íris
-            // Invertemos (B - A) ou mantemos (A - B) dependendo se você quer começar no Vermelho ou no Roxo
-            // A lógica HSL padrão começa em Vermelho (0) e termina em Vermelho (360)
-            
-            if (hslA.h !== hslB.h) {
-                // Ajuste fino: O Hue vai de 0 a 360.
-                // Vermelho (~0 ou ~360), Verde (~120), Azul (~240).
-                return hslB.h - hslA.h; // Decrescente (Vermelho -> Rosa -> Roxo -> Azul...)
-            }
-            
-            // 3. Desempate por Luminosidade
+            if (isGrayscaleA && isGrayscaleB) return hslB.l - hslA.l;
+            if (hslA.h !== hslB.h) return hslB.h - hslA.h;
             return hslB.l - hslA.l;
         });
     }
 
-    // ================================================================
-    // LOGICA MESTRE: BUNDLES (Ocultos) + ITENS AGRUPADOS
-    // ================================================================
-
-    // ================================================================
-    // LOGICA MESTRE: BUNDLES + ORDENAÇÃO POR COR
-    // ================================================================
-
-    /**
-     * Organiza a lista agrupando itens de bundles e ordenando por cor.
-     * @param {Array} listaTotal - Lista de itens a organizar.
-     * @param {Boolean} mostrarBundlesPais - Se true, exibe o Card do Bundle (usado em Meus Itens). Se false, oculta (usado na Loja).
-     */
     organizarItensComBundles(listaTotal, mostrarBundlesPais = false) {
         const processadosIds = new Set();
         const listaFinal = [];
         const mapaItens = new Map(listaTotal.map(i => [i.id, i]));
 
-        // 1. Identificar os Bundles
         let bundles = listaTotal.filter(item => item.isBundle);
-        
-        // Ordena Bundles por cor
         bundles = this.ordenarPorCor(bundles);
 
-        // 2. Processar Bundles e seus Filhos
         bundles.forEach(bundle => {
-            
-            // --- ALTERAÇÃO AQUI: Condicional para exibir o Bundle Pai ---
             if (mostrarBundlesPais) {
                 listaFinal.push(bundle);
                 processadosIds.add(bundle.id);
             }
-            // -----------------------------------------------------------
 
             if (bundle.bundleItems && Array.isArray(bundle.bundleItems) && bundle.bundleItems.length > 0) {
                 let itensDoBundle = [];
                 bundle.bundleItems.forEach(itemId => {
-                    if (mapaItens.has(itemId)) {
-                        itensDoBundle.push(mapaItens.get(itemId));
-                    }
+                    if (mapaItens.has(itemId)) itensDoBundle.push(mapaItens.get(itemId));
                 });
-
-                // Ordena os filhos por cor
                 itensDoBundle = this.ordenarPorCor(itensDoBundle);
-
                 itensDoBundle.forEach(itemFilho => {
-                    // Se já mostramos o bundle pai, talvez você queira mostrar os filhos logo abaixo
-                    // ou talvez queira ocultar os filhos para não duplicar visualmente.
-                    // A lógica abaixo MANTÉM os filhos na lista, agrupados com o pai.
                     if (!processadosIds.has(itemFilho.id)) {
                         listaFinal.push(itemFilho);
                         processadosIds.add(itemFilho.id);
@@ -435,15 +427,11 @@ class VitrineJS {
             }
         });
 
-        // 3. Itens Restantes (que não são bundles ou não entraram no processamento acima)
         let itensSobraram = listaTotal.filter(item => {
-            // Se mostrarBundlesPais for false, temos que garantir que bundles não processados não apareçam aqui
             if (!mostrarBundlesPais && item.isBundle) return false;
-            
             return !processadosIds.has(item.id);
         });
 
-        // 4. Ordena e adiciona o restante
         if (itensSobraram.length > 0) {
             const sobraOrdenada = this.ordenarPorCor(itensSobraram);
             listaFinal.push(...sobraOrdenada);
@@ -452,56 +440,49 @@ class VitrineJS {
         return listaFinal;
     }
 
-    gerarRankingDeRaridades(listaItens) {
-        const raridadesUnicas = [...new Set(listaItens.map(item => item.raridade || 'Comum'))];
-        const getPesoBase = (raridade) => {
-            const r = raridade.toLowerCase().trim();
-            if (r.includes('série') || r.includes('serie')) return 10;
-            if (r === 'lendário' || r === 'legendary') return 6;
-            if (r === 'épico' || r === 'epic') return 5;
-            if (r === 'raro' || r === 'rare') return 4;
-            if (r === 'incomum' || r === 'uncommon') return 3;
-            return 1;
-        };
-        raridadesUnicas.sort((a, b) => {
-            const pesoA = getPesoBase(a);
-            const pesoB = getPesoBase(b);
-            if (pesoA !== pesoB) return pesoB - pesoA;
-            return a.localeCompare(b);
-        });
-        return raridadesUnicas;
-    }
-
-    ordenarPorRaridadeDinamica(lista) {
-        if (!lista || lista.length === 0) return lista;
-        const rankingRaridades = this.gerarRankingDeRaridades(lista);
-        const mapaPrioridade = {};
-        rankingRaridades.forEach((raridade, index) => { mapaPrioridade[raridade] = index; });
-
-        return lista.sort((a, b) => {
-            const raridadeA = a.raridade || 'Comum';
-            const raridadeB = b.raridade || 'Comum';
-            const prioridadeA = mapaPrioridade[raridadeA];
-            const prioridadeB = mapaPrioridade[raridadeB];
-            if (prioridadeA !== prioridadeB) return prioridadeA - prioridadeB;
-            return (a.nome || '').localeCompare(b.nome || '');
-        });
-    }
-
-    // ================================================================
-    // RENDERIZAÇÃO
-    // ================================================================
-
     renderizaItens() {
         if (!this.cosmeticosGrid) return;
-        const tipo = this.shopTypeFilter.value.toLowerCase();
-        const raridadeValue = this.shopRarityFilter.value;
-        const busca = this.shopSearchInput.value.toLowerCase().trim();
+        
+        const mapaTipos = {
+            'outfit': 'traje', 'skin': 'traje',
+            'backpack': 'acessório para as costas', 'mochila': 'acessório para as costas',
+            'pickaxe': 'picareta', 'glider': 'asa-delta',
+            'emote': 'gesto', 'wrap': 'envelopamento', 'pet': 'mascote',
+            'shoes': 'sapatos', 'sapatos': 'sapatos'
+        };
+
+        let tipoSelecionado = this.shopTypeFilter ? this.shopTypeFilter.value.toLowerCase() : '';
+        if (mapaTipos[tipoSelecionado]) {
+            tipoSelecionado = mapaTipos[tipoSelecionado];
+        }
+
+        const raridadeValue = this.shopRarityFilter ? this.shopRarityFilter.value : '';
+        const busca = this.shopSearchInput ? this.shopSearchInput.value.toLowerCase().trim() : '';
+        const dataInicio = this.shopDateStart && this.shopDateStart.value ? new Date(this.shopDateStart.value) : null;
+        const dataFim = this.shopDateEnd && this.shopDateEnd.value ? new Date(this.shopDateEnd.value) : null;
+        const apenasNovos = this.shopCheckNew ? this.shopCheckNew.checked : false;
+        const apenasVenda = this.shopCheckForSale ? this.shopCheckForSale.checked : false;
+        const apenasPromo = this.shopCheckPromo ? this.shopCheckPromo.checked : false;
 
         let itensFiltrados = this.itens.filter(item => {
-            const matchTipo = !tipo || (item.tipo && item.tipo.toLowerCase() === tipo);
-            const matchRaridade = !raridadeValue || this.obterClasseRaridade(item.raridade) === raridadeValue;
+            const matchTipo = !tipoSelecionado || (item.tipo && item.tipo.toLowerCase().includes(tipoSelecionado));
+            const classeRaridade = this.obterClasseRaridade(item.raridade);
+            const matchRaridade = !raridadeValue || classeRaridade === raridadeValue;
             const matchBusca = !busca || (item.nome && item.nome.toLowerCase().includes(busca));
+
+            if (apenasNovos && !item.isNew) return false;
+            if (apenasVenda && (!item.isForSale || item.isAdquirido)) return false;
+            if (apenasPromo && !item.isForSale) return false;
+
+            if (dataInicio || dataFim) {
+                const dataItem = new Date(item.dataInclusao);
+                if (dataInicio && dataItem < dataInicio) return false;
+                if (dataFim) {
+                    const fimDoDia = new Date(dataFim);
+                    fimDoDia.setHours(23, 59, 59, 999);
+                    if (dataItem > fimDoDia) return false;
+                }
+            }
             return matchTipo && matchRaridade && matchBusca;
         });
         
@@ -512,7 +493,6 @@ class VitrineJS {
         }
 
         const listaFinalParaExibir = this.organizarItensComBundles(itensFiltrados, false);
-
         const fragmento = document.createDocumentFragment();
         for (const item of listaFinalParaExibir) {
             fragmento.appendChild(this.criarCard(item));
@@ -525,15 +505,6 @@ class VitrineJS {
             await this.buscaTodosOsItens();
             this.todosOsItensCarregados = true;
         }
-        if (this.allTypeFilter) this.allTypeFilter.onchange = () => this.buscaTodosOsItens();
-        if (this.allRarityFilter) this.allRarityFilter.onchange = () => this.buscaTodosOsItens();
-        if (this.allSearchInput) {
-            let timeoutId;
-            this.allSearchInput.oninput = () => {
-                clearTimeout(timeoutId);
-                timeoutId = setTimeout(() => { this.buscaTodosOsItens(); }, 500);
-            };
-        }
     }
 
     async buscaTodosOsItens() {
@@ -541,32 +512,51 @@ class VitrineJS {
         const headers = { 'Content-Type': 'application/json' };
         if (this.user) headers['Authorization'] = `Bearer ${this.user}`;
 
-        const tipo = this.allTypeFilter ? this.allTypeFilter.value : '';
+        let baseUrl = `${this.API_BASE_URL}/cosmeticos`;
+        if (this.allCheckNew && this.allCheckNew.checked) {
+            baseUrl = `${this.API_BASE_URL}/cosmeticos/novos`;
+        } else if (this.allCheckForSale && this.allCheckForSale.checked) {
+            baseUrl = `${this.API_BASE_URL}/cosmeticos/loja`;
+        }
+
+        const url = new URL(baseUrl);
+
+        const mapaTiposAPI = {
+            'outfit': 'Traje', 'skin': 'Traje', 'traje': 'Traje',
+            'backpack': 'Acessório para as Costas', 'mochila': 'Acessório para as Costas', 'acessório para as costas': 'Acessório para as Costas',
+            'pickaxe': 'Picareta', 'picareta': 'Picareta',
+            'glider': 'Asa-delta', 'asa-delta': 'Asa-delta',
+            'emote': 'Gesto', 'gesto': 'Gesto',
+            'wrap': 'Envelopamento', 'envelopamento': 'Envelopamento',
+            'pet': 'Mascote', 'mascote': 'Mascote',
+            'shoes': 'Sapatos', 'sapatos': 'Sapatos'
+        };
+        
+        let tipoRaw = this.allTypeFilter ? this.allTypeFilter.value.toLowerCase() : '';
+        let tipoAPI = mapaTiposAPI[tipoRaw] || (this.allTypeFilter ? this.allTypeFilter.value : '');
+
         const raridadeRaw = this.allRarityFilter ? this.allRarityFilter.value : '';
         const busca = this.allSearchInput ? this.allSearchInput.value.trim() : '';
         const mapaRaridade = { 'serie': 'Série', 'legendary': 'Lendário', 'epic': 'Épico', 'rare': 'Raro', 'uncommon': 'Incomum', 'common': 'Comum' };
         const raridadeAPI = mapaRaridade[raridadeRaw] || '';
 
-        const url = new URL(`${this.API_BASE_URL}/cosmeticos`);
         if (busca) url.searchParams.append('nome', busca);
-        if (tipo) url.searchParams.append('tipo', tipo);
+        if (tipoAPI) url.searchParams.append('tipo', tipoAPI);
         if (raridadeAPI) url.searchParams.append('raridade', raridadeAPI);
-        url.searchParams.append('page', '0'); url.searchParams.append('size', '40'); url.searchParams.append('sort', 'dataInclusao,desc'); 
+        
+        url.searchParams.append('page', '0'); 
+        url.searchParams.append('size', '100');
+        url.searchParams.append('sort', 'dataInclusao,desc'); 
 
         try {
-            this.allItemsGrid.innerHTML = `
-                                        <div class="d-flex flex-column justify-content-center align-items-center w-100" style="grid-column: 1 / -1; min-height: 400px; color: var(--text-secondary);">
-                                            <div class="spinner-border text-primary mb-3" style="width: 3rem; height: 3rem; border-width: 4px;" role="status"></div>
-                                            <p class="fs-5 fw-bold text-light" style="letter-spacing: 1px; animation: pulse 1.5s infinite;">CARREGANDO ITENS...</p>
-                                        </div>
-                                    `;
+            this.allItemsGrid.innerHTML = `<div class="d-flex flex-column justify-content-center align-items-center w-100" style="grid-column: 1 / -1; min-height: 400px; color: var(--text-secondary);"><div class="spinner-border text-primary mb-3" style="width: 3rem; height: 3rem; border-width: 4px;" role="status"></div><p class="fs-5 fw-bold text-light" style="letter-spacing: 1px; animation: pulse 1.5s infinite;">BUSCANDO NA API...</p></div>`;
             const response = await fetch(url.toString(), { headers }); 
             if (!response.ok) throw new Error(`Erro HTTP: ${response.status}`);
             
             const dadosDaPagina = await response.json();
-            const listaItens = dadosDaPagina.content || (Array.isArray(dadosDaPagina) ? dadosDaPagina : []);
+            const listaItensRaw = dadosDaPagina.content || (Array.isArray(dadosDaPagina) ? dadosDaPagina : []);
 
-            this.todosOsItens = listaItens.map(item => {
+            let listaProcessada = listaItensRaw.map(item => {
                 const isAdquirido = this.itensAdquiridosSet.has(item.id);
                 return new ValidadorItem(
                     item.id, item.nome, item.tipo, item.raridade, item.preco, item.urlImagem, 
@@ -574,6 +564,9 @@ class VitrineJS {
                     item.cores, item.isBundle, item.bundleItems
                 ).validaDados();
             });
+
+            listaProcessada = this.filtrarListaLocalmente(listaProcessada);
+            this.todosOsItens = listaProcessada;
             this.renderizarTodosOsItens(); 
         } catch (error) {
             console.error('Erro ao buscar itens:', error);
@@ -581,27 +574,24 @@ class VitrineJS {
         }
     }
 
-    /**
-     * Busca um item pelo ID em todas as listas disponíveis para tentar recuperar o nome.
-     */
-    buscarItemGlobalmente(id) {
-        // 1. Procura na lista da Loja
-        let item = this.itens.find(i => i.id === id);
-        if (item) return item;
+    filtrarListaLocalmente(lista) {
+        const dataInicio = this.allDateStart && this.allDateStart.value ? new Date(this.allDateStart.value) : null;
+        const dataFim = this.allDateEnd && this.allDateEnd.value ? new Date(this.allDateEnd.value) : null;
+        const apenasPromo = this.allCheckPromo ? this.allCheckPromo.checked : false;
 
-        // 2. Procura na lista de Meus Itens (Adquiridos)
-        if (this.userData && this.userData.itensAdquiridos) {
-            item = this.userData.itensAdquiridos.find(i => i.id === id);
-            if (item) return item;
-        }
-
-        // 3. Procura na lista de Todos os Itens (se carregada)
-        if (this.todosOsItens && this.todosOsItens.length > 0) {
-            item = this.todosOsItens.find(i => i.id === id);
-            if (item) return item;
-        }
-
-        return null;
+        return lista.filter(item => {
+            if (dataInicio || dataFim) {
+                const dataItem = new Date(item.dataInclusao);
+                if (dataInicio && dataItem < dataInicio) return false;
+                if (dataFim) {
+                    const fimDoDia = new Date(dataFim);
+                    fimDoDia.setHours(23, 59, 59, 999);
+                    if (dataItem > fimDoDia) return false;
+                }
+            }
+            if (apenasPromo && !item.isForSale) return false;
+            return true;
+        });
     }
     
     renderizarTodosOsItens() {
@@ -614,7 +604,6 @@ class VitrineJS {
         }
 
         const listaFinal = this.organizarItensComBundles(this.todosOsItens, false);
-        
         const fragmento = document.createDocumentFragment();
         for (const item of listaFinal) {
             fragmento.appendChild(this.criarCard(item));
@@ -622,47 +611,9 @@ class VitrineJS {
         this.allItemsGrid.appendChild(fragmento);
     }
 
-    renderizarMeusItens() {
-        if (!this.myItemsGrid) return;
-        this.myItemsGrid.innerHTML = ''; 
-        const itensAdquiridos = this.userData ? (this.userData.itensAdquiridos || []) : [];
-
-        if (itensAdquiridos.length === 0) {
-            this.myItemsGrid.innerHTML = this.gerarHTMLVazio('Você ainda não adquiriu nenhum item.');
-            return;
-        }
-
-        let itensProcessados = itensAdquiridos.map(itemData => {
-            // Verifica se o item adquirido é um bundle
-            const isBundle = itemData.isBundle || (itemData.bundleItems && itemData.bundleItems.length > 0);
-
-            return new ValidadorItem(
-                itemData.id, itemData.nome, itemData.tipo, itemData.raridade,
-                itemData.preco, itemData.urlImagem, itemData.descricao,
-                itemData.isNew, itemData.isForSale, true, itemData.dataInclusao,
-                itemData.cores, 
-                isBundle, // Passa explicitamente se é bundle
-                itemData.bundleItems
-            ).validaDados();
-        });
-
-        // --- AQUI: Passamos TRUE para mostrar os Bundles Pais ---
-        const listaFinal = this.organizarItensComBundles(itensProcessados, true);
-        
-        const fragmento = document.createDocumentFragment();
-        for (const item of listaFinal) {
-            fragmento.appendChild(this.criarCard(item));
-        }
-        this.myItemsGrid.appendChild(fragmento);
-    }
-
     gerarHTMLVazio(mensagem) {
         return `<div class="col-12 w-100 d-flex flex-column justify-content-center align-items-center" style="grid-column: 1 / -1; min-height: 200px;"><i class="bi bi-search text-secondary mb-3" style="font-size: 2rem; opacity: 0.5;"></i><p class="text-center text-light fs-5 m-0">${mensagem}</p></div>`;
     }
-
-    // ================================================================
-    // OUTRAS FUNCIONALIDADES (Usuários, Histórico, Carrossel)
-    // ================================================================
 
     async handleUsersTabFocus() {
         if (this.usuariosCarregados) return; 
@@ -783,9 +734,10 @@ class VitrineJS {
 
         if (bundles.length === 0) {
             this.alternarControlesCarrossel(false);
-            this.carrouselItems.innerHTML = `<div class="carousel-item active" style="height: 600px;"><div class="d-flex flex-column justify-content-center align-items-center h-100 w-100 bg-dark"><i class="bi bi-bag-check mb-3" style="font-size: 4rem; color: rgba(255,255,255,0.2);"></i><h4 class="text-white-50">Pacotões indisponíveis</h4></div></div>`;
+            this.carrouselItems.innerHTML = `<div class="carousel-item active" style="height: 600px;"><div class="d-flex flex-column justify-content-center align-items-center h-100 w-100 bg-dark"><i class="bi bi-bag-check mb-3" style="font-size: 4rem; color: rgba(255,255,255,0.2);"></i><h4 class="text-white-50">Todos os pacotões adquiridos ou indisponíveis</h4></div></div>`;
             return;
         }
+
         this.alternarControlesCarrossel(true);
         const fragmentoItens = document.createDocumentFragment();
         const fragmentoIndicadores = document.createDocumentFragment();
@@ -802,6 +754,7 @@ class VitrineJS {
                 fragmentoIndicadores.appendChild(btnIndicator);
             }
         });
+
         this.carrouselItems.appendChild(fragmentoItens);
         if (this.carouselIndicators) this.carouselIndicators.appendChild(fragmentoIndicadores);
     }
@@ -844,6 +797,44 @@ class VitrineJS {
         return div;
     }
 
+    gerarEstiloBackground(cores, retornarHexMaisEscuro = false) {
+        if (!cores || !Array.isArray(cores) || cores.length === 0) return retornarHexMaisEscuro ? '#000000' : '';
+        const getLuminosidade = (hex) => {
+            const c = hex.replace('#', '').substring(0, 6);
+            return (parseInt(c.substr(0, 2), 16) * 299 + parseInt(c.substr(2, 2), 16) * 587 + parseInt(c.substr(4, 2), 16) * 114) / 1000;
+        };
+        let coresFormatadas = cores.map(c => {
+            let hex = c.startsWith('#') ? c : `#${c}`;
+            if (hex.length === 9) hex = hex.substring(0, 7); 
+            return hex;
+        });
+        if (coresFormatadas.length > 1) coresFormatadas.sort((a, b) => getLuminosidade(b) - getLuminosidade(a));
+        if (retornarHexMaisEscuro) return coresFormatadas[coresFormatadas.length - 1];
+        if (coresFormatadas.length > 1) return `background: linear-gradient(180deg, ${coresFormatadas.join(', ')}) !important;`;
+        return `background: ${coresFormatadas[0]} !important; background-color: ${coresFormatadas[0]} !important;`;
+    }
+    
+    obterClasseRaridade(raridade) {
+        if (!raridade) return 'common';
+        const r = raridade.toLowerCase().trim();
+        if (r.includes('icon') || r.includes('ícones') || r.includes('icones')) return 'icon';
+        if (r.includes('dc')) return 'dc';
+        if (r.includes('marvel')) return 'marvel';
+        if (r.includes('shadow') || r.includes('sombra')) return 'shadow';
+        if (r.includes('frozen') || r.includes('congelada')) return 'frozen';
+        if (r.includes('lava')) return 'lava';
+        if (r.includes('dark') || r.includes('obscura')) return 'dark';
+        if (r.includes('star wars')) return 'starwars';
+        if (r.includes('gaming') || r.includes('jogos')) return 'gaming';
+        if (r.includes('slurp') || r.includes('glup')) return 'slurp';
+        if (r.includes('série') || r.includes('serie') || r.includes('series')) return 'serie';
+        if (r.includes('lendário') || r.includes('legendary')) return 'legendary';
+        if (r.includes('épico') || r.includes('epic')) return 'epic';
+        if (r.includes('raro') || r.includes('rare')) return 'rare';
+        if (r.includes('incomum') || r.includes('uncommon')) return 'uncommon';
+        return 'common';
+    }
+
     criarCard(item) {
         const card = document.createElement('div');
         card.className = 'col';
@@ -869,31 +860,6 @@ class VitrineJS {
             </div>`;
         card.querySelector('.product-card')?.addEventListener('click', () => this.abrirModalItem(item));
         return card;
-    }
-
-    gerarEstiloBackground(cores, retornarHexMaisEscuro = false) {
-        if (!cores || !Array.isArray(cores) || cores.length === 0) return retornarHexMaisEscuro ? '#000000' : '';
-        const getLuminosidade = (hex) => {
-            const c = hex.replace('#', '').substring(0, 6);
-            return (parseInt(c.substr(0, 2), 16) * 299 + parseInt(c.substr(2, 2), 16) * 587 + parseInt(c.substr(4, 2), 16) * 114) / 1000;
-        };
-        let coresFormatadas = cores.map(c => {
-            let hex = c.startsWith('#') ? c : `#${c}`;
-            if (hex.length === 9) hex = hex.substring(0, 7); 
-            return hex;
-        });
-        if (coresFormatadas.length > 1) coresFormatadas.sort((a, b) => getLuminosidade(b) - getLuminosidade(a));
-        if (retornarHexMaisEscuro) return coresFormatadas[coresFormatadas.length - 1];
-        if (coresFormatadas.length > 1) return `background: linear-gradient(180deg, ${coresFormatadas.join(', ')}) !important;`;
-        return `background: ${coresFormatadas[0]} !important; background-color: ${coresFormatadas[0]} !important;`;
-    }
-    
-    obterClasseRaridade(raridade) {
-        if (!raridade) return 'common';
-        const r = raridade.toLowerCase().trim();
-        if (r.includes('série') || r.includes('serie') || r.includes('series')) return 'serie';
-        const mapa = { 'lendário': 'legendary', 'legendary': 'legendary', 'épico': 'epic', 'epico': 'epic', 'epic': 'epic', 'raro': 'rare', 'rare': 'rare', 'incomum': 'uncommon', 'uncommon': 'uncommon', 'comum': 'common', 'common': 'common' };
-        return mapa[r] || 'common';
     }
 
     abrirModalItem(item) {
@@ -963,78 +929,44 @@ class VitrineJS {
     }
 
     handleCompraClick() {
-        // 1. Verificações Básicas
-        if (!this.user) {
-            Swal.fire({ icon: 'error', title: 'Login Necessário', text: 'Você precisa estar logado para fazer uma compra.' });
-            return;
-        }
-        if (!this.currentItemInModal || !this.currentItemInModal.id) {
-            Swal.fire({ icon: 'error', title: 'Erro', text: 'Nenhum item selecionado.' });
-            return;
-        }
-        if (this.userData.creditos < this.currentItemInModal.preco) {
-            Swal.fire({ icon: 'warning', title: 'Saldo Insuficiente', text: `Você não tem V-Bucks suficientes.` });
-            return;
-        }
-
-        // 2. Verificação de Duplicatas em Bundle
+        if (!this.user) { Swal.fire({ icon: 'error', title: 'Login Necessário', text: 'Você precisa estar logado para fazer uma compra.' }); return; }
+        if (!this.currentItemInModal || !this.currentItemInModal.id) { Swal.fire({ icon: 'error', title: 'Erro', text: 'Nenhum item selecionado.' }); return; }
+        if (this.userData.creditos < this.currentItemInModal.preco) { Swal.fire({ icon: 'warning', title: 'Saldo Insuficiente', text: `Você não tem V-Bucks suficientes.` }); return; }
+        
         let itensJaPossuidos = [];
-
         if (this.currentItemInModal.isBundle && this.currentItemInModal.bundleItems && this.currentItemInModal.bundleItems.length > 0) {
             this.currentItemInModal.bundleItems.forEach(itemId => {
                 if (this.itensAdquiridosSet.has(itemId)) {
-                    // Tenta achar o nome do item para mostrar na mensagem
                     const itemObj = this.buscarItemGlobalmente(itemId);
-                    const nomeItem = itemObj ? itemObj.nome : itemId; // Usa o ID se não achar o nome
-                    itensJaPossuidos.push(nomeItem);
+                    itensJaPossuidos.push(itemObj ? itemObj.nome : itemId);
                 }
             });
         }
 
-        // 3. Configuração da Mensagem do Modal
         let tituloModal = 'Confirmar Compra?';
         let htmlModal = `Você está prestes a comprar <b>${this.currentItemInModal.nome}</b> por <b>${this.currentItemInModal.preco.toLocaleString('pt-BR')} V-Bucks</b>.`;
         let iconModal = 'question';
         let confirmBtnText = 'Confirmar';
 
-        // Se encontrou duplicatas, muda o tom do aviso
         if (itensJaPossuidos.length > 0) {
             tituloModal = 'Itens Duplicados Detectados';
             iconModal = 'warning';
             confirmBtnText = 'Comprar Mesmo Assim';
-            
-            // Monta lista de itens
             const listaItensHtml = itensJaPossuidos.map(nome => `<li class="text-warning">${nome}</li>`).join('');
-            
             htmlModal = `
                 <div class="text-start">
                     <p>Você já possui os seguintes itens deste pacote:</p>
-                    <ul style="list-style-type: disc; padding-left: 20px; margin-bottom: 15px;">
-                        ${listaItensHtml}
-                    </ul>
-                    <p class="mb-0">Você pagará o valor cheio de <b>${this.currentItemInModal.preco.toLocaleString('pt-BR')} V-Bucks</b> pelo restante do pacote, tem certeza que deseja continuar?</p>
-                </div>
-            `;
+                    <ul style="list-style-type: disc; padding-left: 20px; margin-bottom: 15px;">${listaItensHtml}</ul>
+                    <p class="mb-0">Você pagará o valor total de <b>${this.currentItemInModal.preco.toLocaleString('pt-BR')} V-Bucks</b> pelo restante do pacote.</p>
+                    <small class="text-muted">O preço não é descontado automaticamente nesta transação.</small>
+                </div>`;
         }
 
-        // 4. Exibe o Swal
         Swal.fire({
-            title: tituloModal,
-            html: htmlModal,
-            icon: iconModal,
-            showCancelButton: true,
-            confirmButtonText: confirmBtnText,
-            cancelButtonText: 'Cancelar',
-            background: 'rgba(0, 0, 0, 0.9)',
-            color: '#fff',
-            customClass: {
-                popup: 'border-neon'
-            }
-        }).then((result) => {
-            if (result.isConfirmed) {
-                this.executarCompra(this.currentItemInModal.id);
-            }
-        });
+            title: tituloModal, html: htmlModal, icon: iconModal,
+            showCancelButton: true, confirmButtonText: confirmBtnText, cancelButtonText: 'Cancelar',
+            background: 'rgba(0, 0, 0, 0.9)', color: '#fff', customClass: { popup: 'border-neon' }
+        }).then((result) => { if (result.isConfirmed) this.executarCompra(this.currentItemInModal.id); });
     }
 
     async executarCompra(itemId) {
@@ -1087,6 +1019,20 @@ class VitrineJS {
     sanitizarUrl(url) { try { new URL(url); return url; } catch { return ''; } }
     mostrarErro(mensagem, gridElement = this.cosmeticosGrid) {
         if (gridElement) gridElement.innerHTML = `<div class="col-12 w-100 d-flex flex-column justify-content-center align-items-center" style="grid-column: 1 / -1; min-height: 150px;"><i class="bi bi-exclamation-triangle text-danger mb-3" style="font-size: 2rem;"></i><p class="text-center text-danger fs-5 m-0">${this.sanitizarTexto(mensagem)}</p></div>`;
+    }
+    
+    buscarItemGlobalmente(id) {
+        let item = this.itens.find(i => i.id === id);
+        if (item) return item;
+        if (this.userData && this.userData.itensAdquiridos) {
+            item = this.userData.itensAdquiridos.find(i => i.id === id);
+            if (item) return item;
+        }
+        if (this.todosOsItens && this.todosOsItens.length > 0) {
+            item = this.todosOsItens.find(i => i.id === id);
+            if (item) return item;
+        }
+        return null;
     }
 }
 

@@ -225,42 +225,52 @@
             <div class="tab-content" id="shopTabContent">
 
                 <div class="tab-pane fade show active" id="shop-content" role="tabpanel">
-                    <h2 class="section-title"> Loja de Itens</h2>
-                    <div class="row g-3 mb-4">
-                        <div class="col-md-4">
-                            <label for="shop-typeFilter" class="form-label">Tipo</label>
-                            <select class="form-select" id="shop-typeFilter">
-                                <option value="">Todos</option>
-                                <option value="Traje">Skin (Traje)</option>
-                                <option value="Gesto">Emote (Gesto)</option>
-                                <option value="Picareta">Picareta</option>
-                                <option value="Asa-delta">Asa Delta</option>
-                                <option value="Acessório para as Costas">Mochila</option>
-                                <option value="Sapatos">Sapatos</option>
-                                <option value="Envelopamento">Envelopamento</option>
-                                <option value="Mascote">Mascote</option>
-                            </select>
-                        </div>
-                        <div class="col-md-4">
-                            <label for="shop-rarityFilter" class="form-label">Raridade</label>
-                            <select class="form-select" id="shop-rarityFilter">
-                                <option value="">Todas</option>
-                                <option value="serie">Série (Coleção)</option>
-                                <option value="legendary">Lendário</option>
-                                <option value="epic">Épico</option>
-                                <option value="rare">Raro</option>
-                                <option value="uncommon">Incomum</option>
-                                <option value="common">Comum</option>
-                            </select>
-                        </div>
-                        <div class="col-md-4">
-                            <label for="shop-searchInput" class="form-label">Buscar</label>
-                            <input type="text" class="form-control" id="shop-searchInput" placeholder="Nome do cosmético...">
+                    <h2 class="section-title">Loja de Itens</h2>
+                    
+                    <div class="shop-filters mb-4 p-3" style="background: rgba(255,255,255,0.05); border-radius: 15px; border: 1px solid var(--border-color);">
+                        <div class="row g-3">
+                            <div class="col-md-4">
+                                <label class="form-label text-light">Nome</label>
+                                <input type="text" id="shop-searchInput" class="form-control" placeholder="Buscar...">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label text-light">Tipo</label>
+                                <select class="form-select" id="shop-typeFilter">
+                                    <option value="">Todos</option>
+                                    <option value="outfit">Skin (Traje)</option>
+                                    <option value="emote">Gesto</option>
+                                    <option value="pickaxe">Picareta</option>
+                                    <option value="glider">Asa Delta</option>
+                                    <option value="backpack">Mochila</option>
+                                    <option value="wrap">Envelopamento</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label text-light">Raridade</label>
+                                <select class="form-select" id="shop-rarityFilter">
+                                    <option value="">Todas</option>
+                                    <option value="legendary">Lendário</option>
+                                    <option value="epic">Épico</option>
+                                    <option value="rare">Raro</option>
+                                    <option value="uncommon">Incomum</option>
+                                    <option value="common">Comum</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3"><label class="form-label text-light">Data Início</label><input type="date" id="shop-dateStart" class="form-control"></div>
+                            <div class="col-md-3"><label class="form-label text-light">Data Fim</label><input type="date" id="shop-dateEnd" class="form-control"></div>
+                            <div class="col-md-4 d-flex align-items-end gap-3 flex-wrap">
+                                <div class="form-check form-switch"><input class="form-check-input" type="checkbox" id="shop-checkNew"><label class="form-check-label text-light" for="shop-checkNew">Novos</label></div>
+                                <div class="form-check form-switch"><input class="form-check-input" type="checkbox" id="shop-checkForSale"><label class="form-check-label text-light" for="shop-checkForSale">À Venda</label></div>
+                                <div class="form-check form-switch"><input class="form-check-input" type="checkbox" id="shop-checkPromo"><label class="form-check-label text-light" for="shop-checkPromo">Promo</label></div>
+                            </div>
+                            <div class="col-md-2 d-flex align-items-end">
+                                <button id="shop-clearFilters" class="btn btn-outline-light w-100"><i class="bi bi-x-circle"></i> Limpar</button>
+                            </div>
                         </div>
                     </div>
                     <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4 products-grid" id="shop-grid"></div>
                 </div>
-                
+
                 <div class="tab-pane fade" id="my-items-content" role="tabpanel">
                     <h2 class="section-title">Meus Itens Adquiridos</h2>
                     <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4 products-grid" id="my-items-grid">
@@ -269,36 +279,46 @@
 
                 <div class="tab-pane fade" id="all-items-content" role="tabpanel">
                     <h2 class="section-title">Todos os Cosméticos</h2>
-                    <div class="row g-3 mb-4">
-                        <div class="col-md-4">
-                            <label for="all-typeFilter" class="form-label">Tipo</label>
-                            <select class="form-select" id="all-typeFilter">
-                                <option value="">Todos</option>
-                                <option value="Traje">Skin (Traje)</option>
-                                <option value="Gesto">Emote (Gesto)</option>
-                                <option value="Picareta">Picareta</option>
-                                <option value="Asa-delta">Asa Delta</option>
-                                <option value="Acessório para as Costas">Mochila</option>
-                                <option value="Sapatos">Sapatos</option>
-                                <option value="Envelopamento">Envelopamento</option>
-                                <option value="Mascote">Mascote</option>
-                            </select>
-                        </div>
-                        <div class="col-md-4">
-                            <label for="all-rarityFilter" class="form-label">Raridade</label>
-                            <select class="form-select" id="all-rarityFilter">
-                                <option value="">Todas</option>
-                                <option value="serie">Série (Coleção)</option>
-                                <option value="legendary">Lendário</option>
-                                <option value="epic">Épico</option>
-                                <option value="rare">Raro</option>
-                                <option value="uncommon">Incomum</option>
-                                <option value="common">Comum</option>
-                            </select>
-                        </div>
-                        <div class="col-md-4">
-                            <label for="all-searchInput" class="form-label">Buscar</label>
-                            <input type="text" class="form-control" id="all-searchInput" placeholder="Nome do cosmético...">
+                    
+                    <div class="shop-filters mb-4 p-3" style="background: rgba(255,255,255,0.05); border-radius: 15px; border: 1px solid var(--border-color);">
+                        <div class="row g-3">
+                            <div class="col-md-4">
+                                <label class="form-label text-light">Nome</label>
+                                <input type="text" class="form-control" id="all-searchInput" placeholder="Buscar...">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label text-light">Tipo</label>
+                                <select class="form-select" id="all-typeFilter">
+                                    <option value="">Todos</option>
+                                    <option value="outfit">Skin (Traje)</option>
+                                    <option value="emote">Gesto</option>
+                                    <option value="pickaxe">Picareta</option>
+                                    <option value="glider">Asa Delta</option>
+                                    <option value="backpack">Mochila</option>
+                                    <option value="wrap">Envelopamento</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label text-light">Raridade</label>
+                                <select class="form-select" id="all-rarityFilter">
+                                    <option value="">Todas</option>
+                                    <option value="legendary">Lendário</option>
+                                    <option value="epic">Épico</option>
+                                    <option value="rare">Raro</option>
+                                    <option value="uncommon">Incomum</option>
+                                    <option value="common">Comum</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3"><label class="form-label text-light">Data Início</label><input type="date" id="all-dateStart" class="form-control"></div>
+                            <div class="col-md-3"><label class="form-label text-light">Data Fim</label><input type="date" id="all-dateEnd" class="form-control"></div>
+                            <div class="col-md-4 d-flex align-items-end gap-3 flex-wrap">
+                                <div class="form-check form-switch"><input class="form-check-input" type="checkbox" id="all-checkNew"><label class="form-check-label text-light" for="all-checkNew">Novos</label></div>
+                                <div class="form-check form-switch"><input class="form-check-input" type="checkbox" id="all-checkForSale"><label class="form-check-label text-light" for="all-checkForSale">À Venda</label></div>
+                                <div class="form-check form-switch"><input class="form-check-input" type="checkbox" id="all-checkPromo"><label class="form-check-label text-light" for="all-checkPromo">Promo</label></div>
+                            </div>
+                            <div class="col-md-2 d-flex align-items-end">
+                                <button id="all-clearFilters" class="btn btn-outline-light w-100"><i class="bi bi-x-circle"></i> Limpar</button>
+                            </div>
                         </div>
                     </div>
                     <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4 products-grid" id="all-items-grid"></div>
