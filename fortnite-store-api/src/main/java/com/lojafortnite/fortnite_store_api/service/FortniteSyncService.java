@@ -204,87 +204,94 @@ public class FortniteSyncService {
         }
     }
 
-    // --- MÉTODO COM A LÓGICA DE BUNDLE E CORES ---
+    // --- METODO COM A LÓGICA DE BUNDLE E CORES ---
     private void processShopSection(List<ShopItemDTO> entries, Set<String> itemsOnSale) {
-        if (entries == null) {
-            return;
-        }
+        if (entries == null) return;
 
         for (ShopItemDTO entry : entries) {
-            Integer precoFinal = entry.getFinalPrice();
+            Integer precoDaOferta = entry.getFinalPrice();
             List<CosmeticoApiDTO> brItems = entry.getBrItems();
 
-            if (brItems == null || brItems.isEmpty()) {
-                continue; // Pula se não tiver itens
-            }
+            if (brItems == null || brItems.isEmpty()) continue;
 
-            // 1. LÓGICA DE BUNDLE (PACOTES)
+            // CENÁRIO A: É UM BUNDLE (PACOTÃO)
             if (entry.getBundle() != null) {
                 try {
-                    // Cria um ID único para o Bundle baseado no nome (remove espaços e caracteres especiais)
+                    // 1. Cria/Atualiza o objeto do PACOTE
                     String bundleId = "BUNDLE_" + entry.getBundle().getName().replaceAll("[^a-zA-Z0-9]", "");
 
-                    // Verifica se já existe ou cria novo
                     Cosmetico pacote = cosmeticoRepository.findById(bundleId).orElse(new Cosmetico());
-
                     pacote.setId(bundleId);
                     pacote.setNome(entry.getBundle().getName());
-                    pacote.setDescricao(entry.getBundle().getInfo()); // "Bundle" ou descrição se houver
+                    pacote.setDescricao(entry.getBundle().getInfo());
                     pacote.setUrlImagem(entry.getBundle().getImage());
-                    pacote.setPreco(precoFinal);
+                    pacote.setPreco(precoDaOferta); // Preço do PACOTE
                     pacote.setIsForSale(true);
-                    pacote.setIsBundle(true); // <-- Importante para o CompraService saber
-                    pacote.setTipo("Pacotão"); // Para aparecer nos filtros como Pacotão
-                    pacote.setRaridade("Comum"); // Default, ou pegue do primeiro item
+                    pacote.setIsBundle(true);
+                    pacote.setTipo("Pacotão");
+                    pacote.setRaridade("Comum");
 
-                    // A. Salva os IDs dos itens filhos no JSON
-                    List<String> idsFilhos = brItems.stream()
-                            .map(CosmeticoApiDTO::getId)
-                            .collect(Collectors.toList());
+                    // Salva os IDs dos filhos para entregar na compra
+                    List<String> idsFilhos = brItems.stream().map(CosmeticoApiDTO::getId).collect(Collectors.toList());
                     pacote.setBundleItemsJson(objectMapper.writeValueAsString(idsFilhos));
 
-                    // B. Salva as CORES do Bundle (vindo de entry.getColors())
                     if (entry.getColors() != null) {
-                        // Converte os valores do mapa de cores em uma lista JSON
-                        String coresJson = objectMapper.writeValueAsString(entry.getColors().values());
-                        pacote.setCoresJson(coresJson);
+                        pacote.setCoresJson(objectMapper.writeValueAsString(entry.getColors().values()));
                     }
 
                     cosmeticoRepository.save(pacote);
-                    itemsOnSale.add(bundleId); // Marca que o bundle está na loja
+                    itemsOnSale.add(bundleId);
+
+                    // 2. Garante que os itens FILHOS existem no banco, mas NÃO define o preço deles aqui.
+                    //    (Se eles forem vendidos separadamente, aparecerão em OUTRA entrada da lista 'entries'
+                    //     ou a gente precisa de uma lógica de "fallback" se a API não mandar separado).
+                    for (CosmeticoApiDTO brItem : brItems) {
+                        // Apenas garante que o item base existe (sem setar isForSale=true ainda)
+                        // Quem vai setar isForSale=true é o CENÁRIO B, se ele acontecer.
+                        salvarItemBaseSeNaoExistir(brItem);
+                    }
 
                 } catch (Exception e) {
-                    System.err.println("Erro ao processar/salvar Bundle: " + e.getMessage());
+                    System.err.println("Erro ao processar Bundle: " + e.getMessage());
                 }
             }
 
-            // 2. LÓGICA DE ITENS INDIVIDUAIS
-            for (CosmeticoApiDTO brItem : brItems) {
-                String cosmeticId = brItem.getId();
+            // CENÁRIO B: É UM ITEM ÚNICO (OU UM ITEM DE BUNDLE VENDIDO SEPARADO)
+            // A API do Fortnite às vezes manda uma entrada SÓ para o Bundle e
+            // outras entradas separadas para os itens.
+            // SE não tem objeto 'bundle', é um item avulso à venda.
+            else {
+                for (CosmeticoApiDTO brItem : brItems) {
+                    String cosmeticId = brItem.getId();
+                    if (cosmeticId != null) {
+                        cosmeticoRepository.findById(cosmeticId).ifPresent(cosmetico -> {
+                            cosmetico.setIsForSale(true);
+                            cosmetico.setPreco(precoDaOferta); // Preço INDIVIDUAL
 
-                // Só processa se não for um item já processado
-                if (cosmeticId != null && !itemsOnSale.contains(cosmeticId)) {
+                            // Salva cores se houver
+                            if (entry.getColors() != null) {
+                                try {
+                                    cosmetico.setCoresJson(objectMapper.writeValueAsString(entry.getColors().values()));
+                                } catch (Exception e) {}
+                            }
 
-                    // Se o item existe no banco (sincronizado pelo Catálogo Geral)
-                    cosmeticoRepository.findById(cosmeticId).ifPresent(cosmetico -> {
-
-                        // Lógica Simplificada: Se está na lista 'brItems' da loja, está à venda.
-                        // Mesmo que seja parte de um bundle, ele geralmente pode ser comprado,
-                        // ou pelo menos exibido.
-                        cosmetico.setIsForSale(true);
-
-                        // ATENÇÃO: Se for parte de um bundle, o preço aqui pode ser o do bundle.
-                        // Se o entry.getBundle() for NULO, o preço é do item com certeza.
-                        if (entry.getBundle() == null) {
-                            cosmetico.setPreco(precoFinal);
-                        }
-                        // Se for bundle, não alteramos o preço do item individual para não colocar o preço do pacote nele.
-
-                        cosmeticoRepository.save(cosmetico);
-                        itemsOnSale.add(cosmetico.getId());
-                    });
+                            cosmeticoRepository.save(cosmetico);
+                            itemsOnSale.add(cosmetico.getId());
+                        });
+                    }
                 }
             }
+        }
+    }
+
+    // Método auxiliar simples para garantir integridade referencial
+    private void salvarItemBaseSeNaoExistir(CosmeticoApiDTO dto) {
+        if (!cosmeticoRepository.existsById(dto.getId())) {
+            Cosmetico c = new Cosmetico();
+            c.setId(dto.getId());
+            c.setNome(dto.getName());
+            // ... preencher dados básicos ...
+            cosmeticoRepository.save(c);
         }
     }
 }

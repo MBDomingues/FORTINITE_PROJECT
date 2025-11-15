@@ -294,6 +294,8 @@ class VitrineJS {
     }
 
     // Busca itens da Loja na API (/cosmeticos/loja)
+
+   // Busca itens da Loja na API (/cosmeticos/loja)
     async buscaItensDisponiveis() {
         const headers = { 'Content-Type': 'application/json' };
         if (this.user) headers['Authorization'] = `Bearer ${this.user}`;
@@ -305,23 +307,25 @@ class VitrineJS {
             const itensDaApi = await response.json();
             if (Array.isArray(itensDaApi)) {
                 
-                // Mapeia e valida os dados recebidos
                 this.itens = itensDaApi.map(item => {
                     const isAdquirido = this.itensAdquiridosSet.has(item.id);
                     
+                    // Instanciação atualizada com cores e isBundle
                     const validador = new ValidadorItem(
                         item.id, item.nome, item.tipo, item.raridade, 
                         item.preco, item.urlImagem, item.descricao,
                         item.isNew, item.isForSale, 
                         isAdquirido, 
-                        item.dataInclusao
+                        item.dataInclusao,
+                        item.cores,    // Passando array de cores do JSON
+                        item.isBundle  // Passando boolean isBundle do JSON
                     );
                     return validador.validaDados();
                 });
                 
                 console.log(`Total de ${this.itens.length} itens da LOJA carregados.`);
-                this.renderizaItens(); // Exibe no Grid
-                this.preencheCarrousel(); // Exibe no Carrousel
+                this.renderizaItens(); 
+                this.preencheCarrousel(); // Agora filtra só bundles
             
             } else {
                 throw new Error("API /loja/todos não retornou um array.");
@@ -817,26 +821,28 @@ class VitrineJS {
     // --- Métodos Auxiliares (UI, Cards, Carrousel) ---
 
     // Preenche o carrousel com os Top 5 itens mais caros
+    // Preenche o carrousel SOMENTE com Bundles (Pacotões)
     preencheCarrousel() {
         if (!this.carrouselItems) return;
-        if (this.itens.length === 0) {
-           this.carrouselItems.innerHTML = `
-                                            <div class="carousel-item active" style="height: 450px;">
-                                                <div class="d-flex flex-column justify-content-center align-items-center h-100 w-100">
-                                                    <i class="bi bi-cart-x mb-3" style="font-size: 5rem; color: rgba(255,255,255,0.3);"></i>
-                                                    <h3 class="text-white fw-bold text-uppercase" style="letter-spacing: 1px;">Sem Destaques</h3>
-                                                    <p class="text-white-50 fs-5">Aguarde as novidades da loja!</p>
-                                                </div>
-                                            </div>
-                                        `;
+        
+        // Filtra apenas itens que são Bundles
+        const bundles = this.itens.filter(item => item.isBundle === true);
+        
+        if (bundles.length === 0) {
+            // Fallback caso não haja bundles
+            this.carrouselItems.innerHTML = `
+                <div class="carousel-item active" style="height: 450px;">
+                    <div class="d-flex flex-column justify-content-center align-items-center h-100 w-100 bg-dark">
+                        <i class="bi bi-bag-x mb-3" style="font-size: 5rem; color: rgba(255,255,255,0.3);"></i>
+                        <h3 class="text-white fw-bold">Sem Pacotões no Momento</h3>
+                    </div>
+                </div>
+            `;
             return;
         }
-        const top5MaisCaros = [...this.itens]
-            .sort((a, b) => (b.preco || 0) - (a.preco || 0))
-            .slice(0, 5);
         
         const fragmento = document.createDocumentFragment();
-        top5MaisCaros.forEach((item, index) => {
+        bundles.forEach((item, index) => {
             const div = this.criarItemCarrousel(item, index === 0);
             fragmento.appendChild(div);
         });
@@ -844,6 +850,7 @@ class VitrineJS {
         this.carrouselItems.appendChild(fragmento);
     }
     
+    // Cria elemento HTML para um slide do carrousel
     // Cria elemento HTML para um slide do carrousel
     criarItemCarrousel(item, isActive) {
         const div = document.createElement('div');
@@ -855,13 +862,25 @@ class VitrineJS {
             
         const classeRaridade = this.obterClasseRaridade(item.raridade); 
 
+        // Lógica de Cor de Fundo
+        let styleAttr = '';
+        let bgClass = `bg-rarity-${classeRaridade}`;
+
+        // Se houver array de cores, pega a primeira e aplica como background
+        if (item.cores && item.cores.length > 0) {
+            // O JSON envia cores como "c81614ff". Adicionamos '#' na frente.
+            styleAttr = `style="background-color: #${item.cores[0]} !important;"`;
+            bgClass = ''; // Remove a classe de raridade para não conflitar
+        }
+
         div.innerHTML = `
             <div class="row g-0 h-100">
-                <div class="col-md-4 h-100 carousel-image-container bg-rarity-${classeRaridade}">
+                <div class="col-md-4 h-100 carousel-image-container ${bgClass}" ${styleAttr}>
                     ${imagem}
                 </div>
                 <div class="col-md-8 d-flex flex-column justify-content-center p-4 p-md-5">
                     <div class="carousel-caption position-relative text-start">
+                        <span class="badge bg-warning text-dark mb-2">PACOTÃO</span>
                         <h3 class="fw-bold">${this.sanitizarTexto(item.nome || 'Sem nome')}</h3>
                         <p class="lead">${this.sanitizarTexto(item.descricao || 'Sem descrição')}</p>
                         <div class="price mt-3">
@@ -875,6 +894,7 @@ class VitrineJS {
     }
 
     // Cria o HTML do Card de um Item
+    // Cria o HTML do Card de um Item
     criarCard(item) {
         const card = document.createElement('div');
         card.className = 'col';
@@ -885,19 +905,31 @@ class VitrineJS {
 
         const classeRaridade = this.obterClasseRaridade(item.raridade);
 
+        // Lógica de Cor de Fundo Personalizada
+        let styleAttr = '';
+        let bgClass = `bg-rarity-${classeRaridade}`;
+
+        if (item.cores && item.cores.length > 0) {
+            // Usa a primeira cor do array (ex: "c81614ff")
+            styleAttr = `style="background-color: #${item.cores[0]};"`;
+            bgClass = ''; // Remove a classe de raridade se tiver cor definida
+        }
+
         // Badges condicionais
         const newBadge = item.isNew ? `<span class="badge status-badge badge-new">Novo</span>` : '';
         const forSaleBadge = (item.isForSale && !item.isAdquirido) ? `<span class="badge status-badge badge-for-sale">À Venda</span>` : '';
         const adquiridoBadge = (this.user && item.isAdquirido) ? `<span class="badge status-badge badge-adquirido">Adquirido</span>` : '';
+        // Badge extra para Pacotão no card (opcional, mas útil)
+        const bundleBadge = item.isBundle ? `<span class="badge bg-primary mb-1 me-1">Pacotão</span>` : '';
 
         card.innerHTML = `
             <div class="product-card">
-                <div class="product-image bg-rarity-${classeRaridade}">
+                <div class="product-image ${bgClass}" ${styleAttr}>
                     ${imagem}
                 </div>
                 <div class="card-body">
                     <div class="product-status-badges mb-2">
-                        ${newBadge} ${forSaleBadge} ${adquiridoBadge}
+                        ${bundleBadge} ${newBadge} ${forSaleBadge} ${adquiridoBadge}
                     </div>
                     <h5 class="product-name">${this.sanitizarTexto(item.nome || 'Sem nome')}</h5>
                     <p class="product-type">${this.sanitizarTexto(item.tipo || 'Cosmético')}</p>
@@ -933,6 +965,7 @@ class VitrineJS {
     }
 
     // Preenche o modal de detalhes (lógica visual de compra/devolução)
+    // Preenche o modal de detalhes
     preencherModalItem(item) {
         this.currentItemInModal = item;
         const modal = this.itemModalElement;
@@ -941,14 +974,18 @@ class VitrineJS {
         // 1. Imagem e Fundo
         const imgContainer = modal.querySelector('#modal-item-image');
         if (imgContainer) {
-            // Remove classes de raridade antigas e adiciona a nova
-            imgContainer.className = imgContainer.className
-                .split(' ')
-                .filter(c => !c.startsWith('bg-rarity-'))
-                .join(' ');
+            // Limpa classes antigas e estilos inline
+            imgContainer.className = 'modal-image-container'; 
+            imgContainer.removeAttribute('style');
 
             const classeRaridade = this.obterClasseRaridade(item.raridade);
-            imgContainer.classList.add(`bg-rarity-${classeRaridade}`);
+            
+            // Lógica de cor
+            if (item.cores && item.cores.length > 0) {
+                imgContainer.style.backgroundColor = `#${item.cores[0]}`;
+            } else {
+                imgContainer.classList.add(`bg-rarity-${classeRaridade}`);
+            }
 
             if (item.urlImagem) {
                 imgContainer.innerHTML = `<img src="${this.sanitizarUrl(item.urlImagem)}" alt="${this.sanitizarTexto(item.nome)}"/>`;
@@ -957,6 +994,8 @@ class VitrineJS {
             }
         }
 
+        // ... (Restante do código do método permanece igual) ...
+        
         // 2. Badges
         const badgeNew = modal.querySelector('#modal-item-badge-new');
         if (badgeNew) badgeNew.style.display = item.isNew ? 'inline-block' : 'none';
@@ -971,7 +1010,7 @@ class VitrineJS {
             rarityBadge.className = `badge rarity-${classeRaridade}`;
         }
 
-        // 3. Disponibilidade e Botões
+        // 3. Disponibilidade e Botões (Mesma lógica anterior)
         const availability = modal.querySelector('#modal-item-availability');
         const btnBuy = modal.querySelector('#btn-buy'); 
         const btnDevolver = modal.querySelector('#btn-devolver');
@@ -982,7 +1021,6 @@ class VitrineJS {
             const icon = availability.querySelector('i');
 
             if (this.user && item.isAdquirido) {
-                // Item já adquirido
                 title.textContent = 'Adquirido';
                 text.textContent = 'Este item já está na sua coleção.';
                 icon.className = 'bi bi-check-all';
@@ -990,7 +1028,6 @@ class VitrineJS {
                 if (btnBuy) btnBuy.style.display = 'none'; 
                 if (btnDevolver) btnDevolver.style.display = 'flex'; 
             } else if (item.isForSale) {
-                // Disponível para venda
                 title.textContent = 'Disponível na Loja';
                 text.textContent = 'Este item está disponível para compra agora.';
                 icon.className = 'bi bi-check-circle-fill';
@@ -998,7 +1035,6 @@ class VitrineJS {
                 if (btnBuy) btnBuy.style.display = 'flex'; 
                 if (btnDevolver) btnDevolver.style.display = 'none';
             } else {
-                // Indisponível
                 title.textContent = 'Indisponível';
                 text.textContent = 'Este item não está disponível para compra.';
                 icon.className = 'bi bi-x-circle-fill';
@@ -1259,12 +1295,13 @@ class VitrineJS {
 // CLASSE VALIDADORITEM
 // -----------------------------------------------------------------
 
-/**
- * Classe auxiliar para normalizar e validar dados de um item.
- * Garante que os campos tenham tipos corretos e valores default.
- */
+// -----------------------------------------------------------------
+// CLASSE VALIDADORITEM (Atualizada)
+// -----------------------------------------------------------------
+
 class ValidadorItem {
-    constructor(id, nome, tipo, raridade, preco, urlImagem, descricao, isNew, isForSale, isAdquirido, dataInclusao) {
+    // Adicionado: cores e isBundle no construtor
+    constructor(id, nome, tipo, raridade, preco, urlImagem, descricao, isNew, isForSale, isAdquirido, dataInclusao, cores, isBundle) {
         this.id = id;
         this.nome = nome;
         this.tipo = tipo;
@@ -1276,9 +1313,10 @@ class ValidadorItem {
         this.isForSale = isForSale;
         this.isAdquirido = isAdquirido;
         this.dataInclusao = dataInclusao;
+        this.cores = cores;       // Novo
+        this.isBundle = isBundle; // Novo
     }
 
-    // Retorna objeto limpo e seguro
     validaDados() {
         const nome = (typeof this.nome === 'string' && this.nome.trim() !== '') ? this.nome.trim() : 'Sem nome';
         const tipo = (typeof this.tipo === 'string' && this.tipo.trim() !== '') ? this.tipo.trim() : 'Cosmético';
@@ -1290,6 +1328,10 @@ class ValidadorItem {
         const isForSale = typeof this.isForSale === 'boolean' ? this.isForSale : false;
         const isAdquirido = typeof this.isAdquirido === 'boolean' ? this.isAdquirido : false;
         const dataInclusao = this.dataInclusao;
+        
+        // Validação dos novos campos
+        const cores = Array.isArray(this.cores) ? this.cores : [];
+        const isBundle = typeof this.isBundle === 'boolean' ? this.isBundle : false;
 
         return {
             id: this.id,
@@ -1302,7 +1344,9 @@ class ValidadorItem {
             isNew: isNew,
             isForSale: isForSale,
             isAdquirido: isAdquirido,
-            dataInclusao: dataInclusao
+            dataInclusao: dataInclusao,
+            cores: cores,      // Retorna o array de cores
+            isBundle: isBundle // Retorna flag de bundle
         };
     }
 }
