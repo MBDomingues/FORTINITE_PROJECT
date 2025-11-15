@@ -23,7 +23,7 @@ public class CosmeticoService {
     public Page<CosmeticoResponseDTO> listarCosmeticos(
             CosmeticoFiltroRequest filtro,
             Pageable pageable,
-            Long userId // ID do usuário logado (pode ser null)
+            Long userId
     ) {
         var spec = CosmeticoSpecification.comFiltros(filtro);
         Page<Cosmetico> cosmeticosPage = cosmeticoRepository.findAll(spec, pageable);

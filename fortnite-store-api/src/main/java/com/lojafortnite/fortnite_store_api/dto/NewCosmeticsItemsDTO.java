@@ -17,7 +17,6 @@ public class NewCosmeticsItemsDTO {
     private List<CosmeticoApiDTO> beans = new ArrayList<>();
     private List<CosmeticoApiDTO> legoKits = new ArrayList<>();
 
-    // Metodo para juntar tudo em uma lista só e facilitar o processamento
     public List<CosmeticoApiDTO> getTodosOsItens() {
         List<CosmeticoApiDTO> todos = new ArrayList<>();
         if(br != null) todos.addAll(br);

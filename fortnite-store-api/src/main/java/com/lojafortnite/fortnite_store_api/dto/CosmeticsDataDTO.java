@@ -8,6 +8,5 @@ import java.util.List;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class CosmeticsDataDTO {
 
-    // Mapeia a lista "br" de dentro do objeto "data"
     private List<CosmeticoApiDTO> br;
 }

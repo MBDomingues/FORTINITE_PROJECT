@@ -31,6 +31,38 @@ class VitrineJS {
         this.init();
     }
 
+    // --- MAPA CENTRALIZADO DE TRADUÇÃO DE TIPOS ---
+    _getTipoMapa(outputCase = 'lower') {
+        const map = {
+            'outfit': 'Traje', 'skin': 'Traje', 'traje': 'Traje',
+            'backpack': 'Acessório para as Costas', 'mochila': 'Acessório para as Costas', 'acessório para as costas': 'Acessório para as Costas',
+            'pickaxe': 'Picareta', 'picareta': 'Picareta',
+            'glider': 'Asa-delta', 'asa-delta': 'Asa-delta', 'asa delta': 'Asa-delta',
+            'emote': 'Gesto', 'gesto': 'Gesto',
+            'wrap': 'Envelopamento', 'envelopamento': 'Envelopamento',
+            'pet': 'Mascote', 'mascote': 'Mascote',
+            'shoes': 'Sapatos', 'sapatos': 'Sapatos',
+            'contrail': 'Rastro de Fumaça', 'rastro': 'Rastro de Fumaça',
+            'banner': 'Estandarte', 'estandarte': 'Estandarte',
+            'chassis': 'Chassi', 'chassi': 'Chassi',
+            'wheel': 'Roda', 'roda': 'Roda',
+            'decal': 'Decalque', 'decalque': 'Decalque',
+            'music': 'Pacote de Música', 'musica': 'Pacote de Música',
+            'loading': 'Tela de Carregamento'
+        };
+
+        if (outputCase === 'api') {
+            // Retorna o mapa formatado com a primeira letra maiúscula (ideal para Query Params na API)
+            const apiMap = {};
+            for (const key in map) {
+                apiMap[key] = map[key].charAt(0).toUpperCase() + map[key].slice(1);
+            }
+            return apiMap;
+        }
+        // Retorna o mapa em lowercase para comparação local no filter()
+        return map;
+    }
+
     async init() {
         Swal.fire({
             title: 'Carregando Loja...',
@@ -218,6 +250,8 @@ class VitrineJS {
         document.getElementById('nav-perfil-btn')?.addEventListener('click', () => this.preencherModalPerfil(this.userData));
     }
 
+    // --- RENDERIZAR MEUS ITENS (TAB) ---
+
     renderizarMeusItens() {
         if (!this.myItemsGrid) return;
         this.myItemsGrid.innerHTML = ''; 
@@ -322,7 +356,7 @@ class VitrineJS {
                     ).validaDados();
                 });
                 this.renderizaItens(); 
-                this.preencheCarrousel(); // AGORA EXISTE
+                this.preencheCarrousel(); 
                 Swal.close();
             } else { throw new Error("API /loja/todos não retornou um array."); }
         } catch (error) {
@@ -332,9 +366,7 @@ class VitrineJS {
         }
     }
 
-    // ================================================================
-    // LÓGICA DE ORDENAÇÃO POR COR (HSL)
-    // ================================================================
+    // --- MÉTODOS DE ORDENAÇÃO E AGRUPAMENTO ---
 
     hexToHSL(hex) {
         let result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})/i.exec(hex);
@@ -386,10 +418,9 @@ class VitrineJS {
         });
     }
 
-    // ================================================================
-    // LOGICA MESTRE: BUNDLES + ORDENAÇÃO
-    // ================================================================
-
+    /**
+     * @param {Boolean} mostrarBundlesPais - Se true, exibe o Card do Bundle (usado em Meus Itens).
+     */
     organizarItensComBundles(listaTotal, mostrarBundlesPais = false) {
         const processadosIds = new Set();
         const listaFinal = [];
@@ -399,6 +430,8 @@ class VitrineJS {
         bundles = this.ordenarPorCor(bundles);
 
         bundles.forEach(bundle => {
+            const corMestra = bundle.cores;
+
             if (mostrarBundlesPais) {
                 listaFinal.push(bundle);
                 processadosIds.add(bundle.id);
@@ -407,8 +440,13 @@ class VitrineJS {
             if (bundle.bundleItems && Array.isArray(bundle.bundleItems) && bundle.bundleItems.length > 0) {
                 let itensDoBundle = [];
                 bundle.bundleItems.forEach(itemId => {
-                    if (mapaItens.has(itemId)) itensDoBundle.push(mapaItens.get(itemId));
+                    if (mapaItens.has(itemId)) {
+                        const itemClonado = { ...mapaItens.get(itemId) };
+                        itemClonado.cores = corMestra; 
+                        itensDoBundle.push(itemClonado);
+                    }
                 });
+                
                 itensDoBundle = this.ordenarPorCor(itensDoBundle);
                 itensDoBundle.forEach(itemFilho => {
                     if (!processadosIds.has(itemFilho.id)) {
@@ -439,6 +477,7 @@ class VitrineJS {
     renderizaItens() {
         if (!this.cosmeticosGrid) return;
         
+        // --- MAPA DE TRADUÇÃO LOCAL ---
         const mapaTipos = {
             'outfit': 'traje', 'skin': 'traje', 'traje': 'traje',
             'backpack': 'acessório para as costas', 'mochila': 'acessório para as costas',
@@ -449,7 +488,12 @@ class VitrineJS {
             'pet': 'mascote', 'mascote': 'mascote',
             'shoes': 'sapatos', 'sapatos': 'sapatos',
             'contrail': 'rastro de fumaça', 'rastro': 'rastro de fumaça',
-            'banner': 'estandarte', 'estandarte': 'estandarte'
+            'banner': 'estandarte', 'estandarte': 'estandarte',
+            'chassis': 'chassi', 'chassi': 'chassi', // NOVOS
+            'wheel': 'roda', 'roda': 'roda',       // NOVOS
+            'decal': 'decalque', 'decalque': 'decalque',
+            'music': 'pacote de música', 'musica': 'pacote de música',
+            'loading': 'tela de carregamento'
         };
 
         let tipoSelecionado = this.shopTypeFilter ? this.shopTypeFilter.value.toLowerCase() : '';
@@ -522,6 +566,7 @@ class VitrineJS {
 
         const url = new URL(baseUrl);
 
+        // --- MAPA DE TRADUÇÃO PARA API (Capitalizado) ---
         const mapaTiposAPI = {
             'outfit': 'Traje', 'skin': 'Traje', 'traje': 'Traje',
             'backpack': 'Acessório para as Costas', 'mochila': 'Acessório para as Costas', 'acessório para as costas': 'Acessório para as Costas',
@@ -532,7 +577,12 @@ class VitrineJS {
             'pet': 'Mascote', 'mascote': 'Mascote',
             'shoes': 'Sapatos', 'sapatos': 'Sapatos',
             'contrail': 'Rastro de Fumaça', 'rastro': 'Rastro de Fumaça',
-            'banner': 'Estandarte', 'estandarte': 'Estandarte'
+            'banner': 'Estandarte', 'estandarte': 'Estandarte',
+            'chassis': 'Chassi', 'chassi': 'Chassi',
+            'wheel': 'Roda', 'roda': 'Roda',
+            'decal': 'Decalque', 'decalque': 'Decalque',
+            'music': 'Pacote de Música', 'musica': 'Pacote de Música',
+            'loading': 'Tela de Carregamento'
         };
         
         let tipoRaw = this.allTypeFilter ? this.allTypeFilter.value.toLowerCase() : '';
@@ -617,10 +667,6 @@ class VitrineJS {
     gerarHTMLVazio(mensagem) {
         return `<div class="col-12 w-100 d-flex flex-column justify-content-center align-items-center" style="grid-column: 1 / -1; min-height: 200px;"><i class="bi bi-search text-secondary mb-3" style="font-size: 2rem; opacity: 0.5;"></i><p class="text-center text-light fs-5 m-0">${mensagem}</p></div>`;
     }
-
-    // ================================================================
-    // OUTRAS FUNCIONALIDADES (Usuários, Histórico, Carrossel)
-    // ================================================================
 
     async handleUsersTabFocus() {
         if (this.usuariosCarregados) return; 
@@ -733,9 +779,554 @@ class VitrineJS {
         });
     }
 
-    // ================================================================
-    // CARROSSEL (AGORA SIM, RESTAURADO!)
-    // ================================================================
+    preencheCarrousel() {
+        if (!this.carrouselItems) return;
+        const bundles = this.itens.filter(item => item.isBundle === true && !item.isAdquirido);
+        this.carrouselItems.innerHTML = ''; 
+        if (this.carouselIndicators) this.carouselIndicators.innerHTML = ''; 
+
+        if (bundles.length === 0) {
+            this.alternarControlesCarrossel(false);
+            this.carrouselItems.innerHTML = `<div class="carousel-item active" style="height: 600px;"><div class="d-flex flex-column justify-content-center align-items-center h-100 w-100 bg-dark"><i class="bi bi-bag-check mb-3" style="font-size: 4rem; color: rgba(255,255,255,0.2);"></i><h4 class="text-white-50">Todos os pacotões adquiridos ou indisponíveis</h4></div></div>`;
+            return;
+        }
+
+        this.alternarControlesCarrossel(true);
+        const fragmentoItens = document.createDocumentFragment();
+        const fragmentoIndicadores = document.createDocumentFragment();
+
+        bundles.forEach((item, index) => {
+            fragmentoItens.appendChild(this.criarItemCarrousel(item, index === 0));
+            if (this.carouselIndicators) {
+                const btnIndicator = document.createElement('button');
+                btnIndicator.type = 'button';
+                btnIndicator.dataset.bsTarget = '#featuredCarousel';
+                btnIndicator.dataset.bsSlideTo = index;
+                btnIndicator.ariaLabel = `Slide ${index + 1}`;
+                if (index === 0) { btnIndicator.classList.add('active'); btnIndicator.ariaCurrent = 'true'; }
+                fragmentoIndicadores.appendChild(btnIndicator);
+            }
+        });
+
+        this.carrouselItems.appendChild(fragmentoItens);
+        if (this.carouselIndicators) this.carouselIndicators.appendChild(fragmentoIndicadores);
+    }
+
+    alternarControlesCarrossel(mostrar) {
+        const display = mostrar ? 'flex' : 'none';
+        if (this.carouselControlsContainer) this.carouselControlsContainer.style.display = display;
+        if (this.carouselIndicators) this.carouselIndicators.style.display = display;
+    }
+
+    criarItemCarrousel(item, isActive) {
+        const div = document.createElement('div');
+        div.className = `carousel-item ${isActive ? 'active' : ''}`;
+        div.style.height = '600px'; 
+        const imagemUrl = item.urlImagem ? this.sanitizarUrl(item.urlImagem) : '';
+        let estiloBackground = this.gerarEstiloBackground(item.cores, false);
+        let classeRaridade = !estiloBackground ? `bg-rarity-${this.obterClasseRaridade(item.raridade)}` : '';
+        estiloBackground = estiloBackground.replace('!important', '').replace('!important', '');
+
+        div.innerHTML = `
+            <div class="${classeRaridade}" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; ${estiloBackground}; z-index: 1;"></div>
+            <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; z-index: 2;">
+                <img src="${imagemUrl}" alt="${this.sanitizarTexto(item.nome)}" style="max-width: 100%; max-height: 100%; width: auto; height: 100%; object-fit: contain; filter: drop-shadow(0 10px 20px rgba(0,0,0,0.5));">
+            </div>
+            <div style="position: absolute; bottom: 0; left: 0; width: 100%; height: 60%; z-index: 3;"></div>
+            <div class="carousel-caption d-flex flex-column flex-md-row justify-content-between align-items-end w-100 p-4 p-md-5" style="z-index: 4; bottom: 0; left: 0; right: 0; text-align: left; padding-bottom: 50px !important;">
+                <div style="max-width: 65%;">
+                    <span class="badge bg-warning text-dark mb-2 shadow-sm" style="font-size: 0.9rem;">PACOTÃO EXCLUSIVO</span>
+                    <h1 class="fw-bold text-white text-uppercase mb-2" style="text-shadow: 2px 2px 10px rgba(0,0,0,1); font-size: 3rem; line-height: 1;">${this.sanitizarTexto(item.nome || 'Sem nome')}</h1>
+                    <p class="text-white-50 mb-3 d-none d-md-block" style="font-size: 1.1rem; text-shadow: 1px 1px 5px rgba(0,0,0,1); max-width: 80%;">${this.sanitizarTexto(item.descricao || '')}</p>
+                    <h2 class="m-0 text-warning fw-bold" style="text-shadow: 1px 1px 5px rgba(0,0,0,1); font-size: 2rem;">${item.preco ? `${item.preco.toLocaleString('pt-BR')} V-Bucks` : 'Indisponível'}</h2>
+                </div>
+                <div class="d-flex gap-3 mt-4 mt-md-0">
+                    <button class="btn btn-light btn-lg px-4 py-3 fw-bold btn-carousel-buy shadow-lg" style="border-radius: 50px; white-space: nowrap; min-width: 160px;"><i class="bi bi-cart-fill me-2"></i>Comprar</button>
+                    <button class="btn btn-outline-light btn-lg px-4 py-3 fw-bold btn-carousel-view shadow-lg" style="border-radius: 50px; backdrop-filter: blur(4px); white-space: nowrap; min-width: 160px;"><i class="bi bi-eye me-2"></i>Detalhes</button>
+                </div>
+            </div>`;
+        div.querySelector('.btn-carousel-buy')?.addEventListener('click', () => { this.currentItemInModal = item; this.handleCompraClick(); });
+        div.querySelector('.btn-carousel-view')?.addEventListener('click', () => this.abrirModalItem(item));
+        return div;
+    }
+
+    // [METODOS DE TRADUÇÃO/AJUSTE DE CORES/ORDERNAÇÃO]
+
+    gerarEstiloBackground(cores, retornarHexMaisEscuro = false) {
+        if (!cores || !Array.isArray(cores) || cores.length === 0) return retornarHexMaisEscuro ? '#000000' : '';
+        const getLuminosidade = (hex) => {
+            const c = hex.replace('#', '').substring(0, 6);
+            return (parseInt(c.substr(0, 2), 16) * 299 + parseInt(c.substr(2, 2), 16) * 587 + parseInt(c.substr(4, 2), 16) * 114) / 1000;
+        };
+        let coresFormatadas = cores.map(c => {
+            let hex = c.startsWith('#') ? c : `#${c}`;
+            if (hex.length === 9) hex = hex.substring(0, 7); 
+            return hex;
+        });
+        if (coresFormatadas.length > 1) coresFormatadas.sort((a, b) => getLuminosidade(b) - getLuminosidade(a));
+        if (retornarHexMaisEscuro) return coresFormatadas[coresFormatadas.length - 1];
+        if (coresFormatadas.length > 1) return `background: linear-gradient(180deg, ${coresFormatadas[0]} 0%, ${coresFormatadas[coresFormatadas.length - 1]} 100%) !important;`;
+        return `background: ${coresFormatadas[0]} !important; background-color: ${coresFormatadas[0]} !important;`;
+    }
+    
+    obterClasseRaridade(raridade) {
+        if (!raridade) return 'common';
+        const r = raridade.toLowerCase().trim();
+        if (r.includes('icon') || r.includes('ícones') || r.includes('icones')) return 'icon';
+        if (r.includes('dc')) return 'dc';
+        if (r.includes('marvel')) return 'marvel';
+        if (r.includes('shadow') || r.includes('sombra')) return 'shadow';
+        if (r.includes('frozen') || r.includes('congelada')) return 'frozen';
+        if (r.includes('lava')) return 'lava';
+        if (r.includes('dark') || r.includes('obscura')) return 'dark';
+        if (r.includes('star wars')) return 'starwars';
+        if (r.includes('gaming') || r.includes('jogos')) return 'gaming';
+        if (r.includes('slurp') || r.includes('glup')) return 'slurp';
+        if (r.includes('série') || r.includes('serie') || r.includes('series')) return 'serie';
+        if (r.includes('lendário') || r.includes('legendary')) return 'legendary';
+        if (r.includes('épico') || r.includes('epic')) return 'epic';
+        if (r.includes('raro') || r.includes('rare')) return 'rare';
+        if (r.includes('incomum') || r.includes('uncommon')) return 'uncommon';
+        return 'common';
+    }
+
+    criarCard(item) {
+        const card = document.createElement('div');
+        card.className = 'col';
+        const imagem = item.urlImagem ? `<img src="${this.sanitizarUrl(item.urlImagem)}" alt="${this.sanitizarTexto(item.nome || 'Item')}" />` : '<div class="placeholder-image">Sem imagem</div>';
+        let classeRaridade = this.obterClasseRaridade(item.raridade);
+        let styleBackground = item.cores && item.cores.length > 0 ? `style="${this.gerarEstiloBackground(item.cores)}"` : '';
+        let classeBackground = item.cores && item.cores.length > 0 ? '' : `bg-rarity-${classeRaridade}`;
+        
+        const newBadge = item.isNew ? `<span class="badge status-badge badge-new">Novo</span>` : '';
+        const forSaleBadge = (item.isForSale && !item.isAdquirido) ? `<span class="badge status-badge badge-for-sale">À Venda</span>` : '';
+        const adquiridoBadge = (this.user && item.isAdquirido) ? `<span class="badge status-badge badge-adquirido">Adquirido</span>` : '';
+        const bundleBadge = item.isBundle ? `<span class="badge bg-primary mb-1 me-1">Pacotão</span>` : '';
+
+        card.innerHTML = `
+            <div class="product-card">
+                <div class="product-image ${classeBackground}" ${styleBackground}>${imagem}</div>
+                <div class="card-body">
+                    <div class="product-status-badges mb-2">${bundleBadge} ${newBadge} ${forSaleBadge} ${adquiridoBadge}</div>
+                    <h5 class="product-name">${this.sanitizarTexto(item.nome || 'Sem nome')}</h5>
+                    <p class="product-type">${this.sanitizarTexto(item.tipo || 'Cosmético')}</p>
+                    <div class="product-price mt-2">${item.preco ? `${item.preco.toLocaleString('pt-BR')} V-Bucks` : 'Item indisponível'}</div>
+                </div>
+            </div>`;
+        card.querySelector('.product-card')?.addEventListener('click', () => this.abrirModalItem(item));
+        return card;
+    }
+    
+    // ... (metodos hexToHSL, obterCorOrdenacao, ordenarPorCor, organizarItensComBundles - mantidos)
+
+    hexToHSL(hex) {
+        let result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})/i.exec(hex);
+        if (!result) return { h: 0, s: 0, l: 0 };
+        let r = parseInt(result[1], 16) / 255, g = parseInt(result[2], 16) / 255, b = parseInt(result[3], 16) / 255;
+        let max = Math.max(r, g, b), min = Math.min(r, g, b);
+        let h, s, l = (max + min) / 2;
+        if (max === min) { h = s = 0; } 
+        else {
+            let d = max - min;
+            s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+            switch (max) {
+                case r: h = (g - b) / d + (g < b ? 6 : 0); break;
+                case g: h = (b - r) / d + 2; break;
+                case b: h = (r - g) / d + 4; break;
+            }
+            h /= 6;
+        }
+        return { h: h * 360, s: s, l: l };
+    }
+
+    obterCorOrdenacao(item) {
+        if (item.cores && Array.isArray(item.cores) && item.cores.length > 0) {
+            let hex = item.cores[0];
+            if (hex.length > 7) hex = hex.substring(0, 7);
+            return hex;
+        }
+        const raridadeChave = (item.raridade || 'comum').toLowerCase();
+        for (const [key, color] of Object.entries(this.coresPadraoRaridade)) {
+            if (raridadeChave.includes(key)) return color;
+        }
+        return '#808080';
+    }
+
+    ordenarPorCor(lista) {
+        return lista.sort((a, b) => {
+            const hexA = this.obterCorOrdenacao(a);
+            const hexB = this.obterCorOrdenacao(b);
+            const hslA = this.hexToHSL(hexA);
+            const hslB = this.hexToHSL(hexB);
+            const isGrayscaleA = hslA.s < 0.10; 
+            const isGrayscaleB = hslB.s < 0.10;
+
+            if (isGrayscaleA && !isGrayscaleB) return 1;
+            if (!isGrayscaleA && isGrayscaleB) return -1;
+            if (isGrayscaleA && isGrayscaleB) return hslB.l - hslA.l;
+            if (hslA.h !== hslB.h) return hslB.h - hslA.h;
+            return hslB.l - hslA.l;
+        });
+    }
+
+    organizarItensComBundles(listaTotal, mostrarBundlesPais = false) {
+        const processadosIds = new Set();
+        const listaFinal = [];
+        const mapaItens = new Map(listaTotal.map(i => [i.id, i]));
+
+        let bundles = listaTotal.filter(item => item.isBundle);
+        bundles = this.ordenarPorCor(bundles);
+
+        bundles.forEach(bundle => {
+            const corMestra = bundle.cores;
+
+            if (mostrarBundlesPais) {
+                listaFinal.push(bundle);
+                processadosIds.add(bundle.id);
+            }
+
+            if (bundle.bundleItems && Array.isArray(bundle.bundleItems) && bundle.bundleItems.length > 0) {
+                let itensDoBundle = [];
+                bundle.bundleItems.forEach(itemId => {
+                    if (mapaItens.has(itemId)) {
+                        const itemClonado = { ...mapaItens.get(itemId) };
+                        itemClonado.cores = corMestra; 
+                        itensDoBundle.push(itemClonado);
+                    }
+                });
+                
+                itensDoBundle = this.ordenarPorCor(itensDoBundle);
+                itensDoBundle.forEach(itemFilho => {
+                    if (!processadosIds.has(itemFilho.id)) {
+                        listaFinal.push(itemFilho);
+                        processadosIds.add(itemFilho.id);
+                    }
+                });
+            }
+        });
+
+        let itensSobraram = listaTotal.filter(item => {
+            if (!mostrarBundlesPais && item.isBundle) return false;
+            return !processadosIds.has(item.id);
+        });
+
+        if (itensSobraram.length > 0) {
+            const sobraOrdenada = this.ordenarPorCor(itensSobraram);
+            listaFinal.push(...sobraOrdenada);
+        }
+
+        return listaFinal;
+    }
+
+    // --- RENDERIZAÇÃO E FILTROS ---
+
+    renderizaItens() {
+        if (!this.cosmeticosGrid) return;
+        
+        // MAPA DE TRADUÇÃO LOCAL
+        const mapaTipos = {
+            'outfit': 'traje', 'skin': 'traje', 'traje': 'traje',
+            'backpack': 'acessório para as costas', 'mochila': 'acessório para as costas',
+            'pickaxe': 'picareta', 'picareta': 'picareta',
+            'glider': 'asa-delta', 'asa-delta': 'asa-delta', 'asa delta': 'asa-delta',
+            'emote': 'gesto', 'gesto': 'gesto',
+            'wrap': 'envelopamento', 'envelopamento': 'envelopamento',
+            'pet': 'mascote', 'mascote': 'mascote',
+            'shoes': 'sapatos', 'sapatos': 'sapatos',
+            'contrail': 'rastro de fumaça', 'rastro': 'rastro de fumaça',
+            'banner': 'estandarte', 'estandarte': 'estandarte',
+            'chassis': 'chassi', 'chassi': 'chassi',
+            'wheel': 'roda', 'roda': 'roda',
+            'decal': 'decalque', 'decalque': 'decalque',
+            'music': 'pacote de música', 'musica': 'pacote de música',
+            'loading': 'tela de carregamento'
+        };
+
+        let tipoSelecionado = this.shopTypeFilter ? this.shopTypeFilter.value.toLowerCase() : '';
+        if (mapaTipos[tipoSelecionado]) {
+            tipoSelecionado = mapaTipos[tipoSelecionado];
+        }
+
+        const raridadeValue = this.shopRarityFilter ? this.shopRarityFilter.value : '';
+        const busca = this.shopSearchInput ? this.shopSearchInput.value.toLowerCase().trim() : '';
+        const dataInicio = this.shopDateStart && this.shopDateStart.value ? new Date(this.shopDateStart.value) : null;
+        const dataFim = this.shopDateEnd && this.shopDateEnd.value ? new Date(this.shopDateEnd.value) : null;
+        const apenasNovos = this.shopCheckNew ? this.shopCheckNew.checked : false;
+        const apenasVenda = this.shopCheckForSale ? this.shopCheckForSale.checked : false;
+        const apenasPromo = this.shopCheckPromo ? this.shopCheckPromo.checked : false;
+
+        let itensFiltrados = this.itens.filter(item => {
+            const matchTipo = !tipoSelecionado || (item.tipo && item.tipo.toLowerCase().includes(tipoSelecionado));
+            const classeRaridade = this.obterClasseRaridade(item.raridade);
+            const matchRaridade = !raridadeValue || classeRaridade === raridadeValue;
+            const matchBusca = !busca || (item.nome && item.nome.toLowerCase().includes(busca));
+
+            if (apenasNovos && !item.isNew) return false;
+            if (apenasVenda && (!item.isForSale || item.isAdquirido)) return false;
+            if (apenasPromo && !item.isForSale) return false;
+
+            if (dataInicio || dataFim) {
+                const dataItem = new Date(item.dataInclusao);
+                if (dataInicio && dataItem < dataInicio) return false;
+                if (dataFim) {
+                    const fimDoDia = new Date(dataFim);
+                    fimDoDia.setHours(23, 59, 59, 999);
+                    if (dataItem > fimDoDia) return false;
+                }
+            }
+            return matchTipo && matchRaridade && matchBusca;
+        });
+        
+        this.cosmeticosGrid.innerHTML = '';
+        if (itensFiltrados.length === 0) {
+           this.cosmeticosGrid.innerHTML = this.gerarHTMLVazio('Nenhum item encontrado com estes filtros.');
+           return;
+        }
+
+        const listaFinalParaExibir = this.organizarItensComBundles(itensFiltrados, false);
+        const fragmento = document.createDocumentFragment();
+        for (const item of listaFinalParaExibir) {
+            fragmento.appendChild(this.criarCard(item));
+        }
+        this.cosmeticosGrid.appendChild(fragmento);
+    }
+
+    async handleAllItemsTabFocus() {
+        if (!this.todosOsItensCarregados) {
+            await this.buscaTodosOsItens();
+            this.todosOsItensCarregados = true;
+        }
+    }
+
+    async buscaTodosOsItens() {
+        if (!this.allItemsGrid) return;
+        const headers = { 'Content-Type': 'application/json' };
+        if (this.user) headers['Authorization'] = `Bearer ${this.user}`;
+
+        let baseUrl = `${this.API_BASE_URL}/cosmeticos`;
+        if (this.allCheckNew && this.allCheckNew.checked) {
+            baseUrl = `${this.API_BASE_URL}/cosmeticos/novos`;
+        } else if (this.allCheckForSale && this.allCheckForSale.checked) {
+            baseUrl = `${this.API_BASE_URL}/cosmeticos/loja`;
+        }
+
+        const url = new URL(baseUrl);
+
+        // --- MAPA DE TRADUÇÃO PARA API (Capitalizado) ---
+        const mapaTiposAPI = {
+            'outfit': 'Traje', 'skin': 'Traje', 'traje': 'Traje',
+            'backpack': 'Acessório para as Costas', 'mochila': 'Acessório para as Costas', 'acessório para as costas': 'Acessório para as Costas',
+            'pickaxe': 'Picareta', 'picareta': 'Picareta',
+            'glider': 'Asa-delta', 'asa-delta': 'Asa-delta',
+            'emote': 'Gesto', 'gesto': 'Gesto',
+            'wrap': 'Envelopamento', 'envelopamento': 'Envelopamento',
+            'pet': 'Mascote', 'mascote': 'Mascote',
+            'shoes': 'Sapatos', 'sapatos': 'Sapatos',
+            'contrail': 'Rastro de Fumaça', 'rastro': 'Rastro de Fumaça',
+            'banner': 'Estandarte', 'estandarte': 'Estandarte',
+            'chassis': 'Chassi', 'chassi': 'Chassi',
+            'wheel': 'Roda', 'roda': 'Roda',
+            'decal': 'Decalque', 'decalque': 'Decalque',
+            'music': 'Pacote de Música', 'musica': 'Pacote de Música',
+            'loading': 'Tela de Carregamento'
+        };
+        
+        let tipoRaw = this.allTypeFilter ? this.allTypeFilter.value.toLowerCase() : '';
+        // CORRIGIDO: Usa o mapa para garantir que o envio para a API está capitalizado e correto.
+        let tipoAPI = mapaTiposAPI[tipoRaw] || (this.allTypeFilter ? this.allTypeFilter.value : '');
+
+        const raridadeRaw = this.allRarityFilter ? this.allRarityFilter.value : '';
+        const busca = this.allSearchInput ? this.allSearchInput.value.trim() : '';
+        const mapaRaridade = { 'serie': 'Série', 'legendary': 'Lendário', 'epic': 'Épico', 'rare': 'Raro', 'uncommon': 'Incomum', 'common': 'Comum' };
+        const raridadeAPI = mapaRaridade[raridadeRaw] || '';
+
+        if (busca) url.searchParams.append('nome', busca);
+        if (tipoAPI) url.searchParams.append('tipo', tipoAPI);
+        if (raridadeAPI) url.searchParams.append('raridade', raridadeAPI);
+        
+        url.searchParams.append('page', '0'); 
+        url.searchParams.append('size', '100');
+        url.searchParams.append('sort', 'dataInclusao,desc'); 
+
+        try {
+            this.allItemsGrid.innerHTML = `<div class="d-flex flex-column justify-content-center align-items-center w-100" style="grid-column: 1 / -1; min-height: 400px; color: var(--text-secondary);"><div class="spinner-border text-primary mb-3" style="width: 3rem; height: 3rem; border-width: 4px;" role="status"></div><p class="fs-5 fw-bold text-light" style="letter-spacing: 1px; animation: pulse 1.5s infinite;">BUSCANDO NA API...</p></div>`;
+            const response = await fetch(url.toString(), { headers }); 
+            if (!response.ok) throw new Error(`Erro HTTP: ${response.status}`);
+            
+            const dadosDaPagina = await response.json();
+            const listaItensRaw = dadosDaPagina.content || (Array.isArray(dadosDaPagina) ? dadosDaPagina : []);
+
+            let listaProcessada = listaItensRaw.map(item => {
+                const isAdquirido = this.itensAdquiridosSet.has(item.id);
+                return new ValidadorItem(
+                    item.id, item.nome, item.tipo, item.raridade, item.preco, item.urlImagem, 
+                    item.descricao, item.isNew, item.isForSale, isAdquirido, item.dataInclusao,
+                    item.cores, item.isBundle, item.bundleItems
+                ).validaDados();
+            });
+
+            listaProcessada = this.filtrarListaLocalmente(listaProcessada);
+            this.todosOsItens = listaProcessada;
+            this.renderizarTodosOsItens(); 
+        } catch (error) {
+            console.error('Erro ao buscar itens:', error);
+            this.mostrarErro('Erro ao carregar itens.', this.allItemsGrid);
+        }
+    }
+
+    filtrarListaLocalmente(lista) {
+        const dataInicio = this.allDateStart && this.allDateStart.value ? new Date(this.allDateStart.value) : null;
+        const dataFim = this.allDateEnd && this.allDateEnd.value ? new Date(this.allDateEnd.value) : null;
+        const apenasPromo = this.allCheckPromo ? this.allCheckPromo.checked : false;
+
+        return lista.filter(item => {
+            if (dataInicio || dataFim) {
+                const dataItem = new Date(item.dataInclusao);
+                if (dataInicio && dataItem < dataInicio) return false;
+                if (dataFim) {
+                    const fimDoDia = new Date(dataFim);
+                    fimDoDia.setHours(23, 59, 59, 999);
+                    if (dataItem > fimDoDia) return false;
+                }
+            }
+            if (apenasPromo && !item.isForSale) return false;
+            return true;
+        });
+    }
+    
+    renderizarTodosOsItens() {
+        if (!this.allItemsGrid) return;
+        this.allItemsGrid.innerHTML = '';
+        
+        if (this.todosOsItens.length === 0) {
+            this.allItemsGrid.innerHTML = this.gerarHTMLVazio('Nenhum item encontrado.');
+            return;
+        }
+
+        const listaFinal = this.organizarItensComBundles(this.todosOsItens, false);
+        const fragmento = document.createDocumentFragment();
+        for (const item of listaFinal) {
+            fragmento.appendChild(this.criarCard(item));
+        }
+        this.allItemsGrid.appendChild(fragmento);
+    }
+
+    // ... (Métodos auxiliares) ...
+
+    gerarHTMLVazio(mensagem) {
+        return `<div class="col-12 w-100 d-flex flex-column justify-content-center align-items-center" style="grid-column: 1 / -1; min-height: 200px;"><i class="bi bi-search text-secondary mb-3" style="font-size: 2rem; opacity: 0.5;"></i><p class="text-center text-light fs-5 m-0">${mensagem}</p></div>`;
+    }
+
+    async handleUsersTabFocus() {
+        if (this.usuariosCarregados) return; 
+        if (!this.user) { this.mostrarErro('Você precisa estar logado para ver os usuários.', this.usersListContainer); return; }
+        await this.buscaUsuarios();
+        if (this.userSearchInput) this.userSearchInput.addEventListener('input', () => this.renderizarUsuarios());
+        if (this.userSortFilter) this.userSortFilter.addEventListener('change', () => this.renderizarUsuarios());
+    }
+
+    async buscaUsuarios() {
+        if (!this.usersListContainer) return;
+        try {
+            this.usersListContainer.innerHTML = '<div class="col-12"><p class="text-center text-light fs-5">Carregando usuários...</p></div>';
+            const response = await fetch(`${this.API_BASE_URL}/perfis`, { headers: { 'Authorization': `Bearer ${this.user}` } }); 
+            if (!response.ok) throw new Error(`Erro HTTP: ${response.status}`);
+            const dadosDaPagina = await response.json();
+            if (dadosDaPagina.content && Array.isArray(dadosDaPagina.content)) {
+                this.usuarios = dadosDaPagina.content;
+                this.usuariosCarregados = true;
+                this.renderizarUsuarios();
+            } else { throw new Error("A API /perfis não retornou um objeto com a propriedade 'content'."); }
+        } catch (error) { this.mostrarErro(error.message, this.usersListContainer); }
+    }
+
+    renderizarUsuarios() {
+        if (!this.usersListContainer) return;
+        const busca = this.userSearchInput.value.toLowerCase();
+        const sortBy = this.userSortFilter.value;
+        let usuariosFiltrados = this.usuarios.filter(user => !busca || user.email.toLowerCase().includes(busca));
+
+        usuariosFiltrados.sort((a, b) => {
+            if (sortBy === 'email') return a.email.localeCompare(b.email);
+            if (sortBy === 'name') {
+                const nomeA = a.nome || a.email;
+                const nomeB = b.nome || b.email;
+                return nomeA.localeCompare(nomeB);
+            }
+            return a.id - b.id;
+        });
+
+        this.usersListContainer.innerHTML = '';
+        if (usuariosFiltrados.length === 0) { this.usersListContainer.innerHTML = '<p class="text-center text-light fs-5">Nenhum usuário encontrado.</p>'; return; }
+
+        this.usersListContainer.innerHTML = `
+            <div class="table-responsive">
+                <table class="table table-dark table-striped table-hover align-middle text-nowrap custom-mobile-table">
+                    <thead><tr><th scope="col">Email</th><th scope="col">V-Bucks</th><th scope="col" class="text-end">Ação</th></tr></thead>
+                    <tbody>
+                        ${usuariosFiltrados.map(user => `
+                            <tr>
+                                <td data-label="Email">${this.sanitizarTexto(user.nome)}</td>
+                                <td data-label="V-Bucks" class="fw-bold">${user.creditos.toLocaleString('pt-BR')}</td>
+                                <td data-label="Ação" class="text-end"><button class="btn btn-sm btn-info btn-visualizar-usuario" data-userid="${user.id}"><i class="bi bi-eye-fill"></i> <span class="d-none d-sm-inline">Visualizar</span></button></td>
+                            </tr>`).join('')}
+                    </tbody>
+                </table>
+            </div>`;
+        this.usersListContainer.querySelectorAll('.btn-visualizar-usuario').forEach(button => {
+            button.addEventListener('click', (e) => this.handleVisualizarUsuarioClick(e));
+        });
+    }
+
+    handleVisualizarUsuarioClick(event) {
+        const userId = event.currentTarget.dataset.userid;
+        if (!userId) return;
+        this.buscaDadosUsuarioPorId(userId);
+    }
+
+    async buscaDadosUsuarioPorId(id) {
+        Swal.fire({ title: 'Buscando usuário...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+        try {
+            const response = await fetch(`${this.API_BASE_URL}/perfis/${id}`, { headers: { 'Authorization': `Bearer ${this.user}` } });
+            if (!response.ok) throw new Error('Não foi possível buscar os dados do usuário.');
+            const dadosUsuario = await response.json();
+            Swal.close();
+            this.preencherModalPerfil(dadosUsuario);
+            const modal = bootstrap.Modal.getOrCreateInstance(this.perfilModal);
+            modal.show();
+        } catch (error) { Swal.fire({ title: 'Erro', text: error.message, icon: 'error' }); }
+    }
+
+    async buscaHistoricoUsuario() {
+        if (this.historicoCarregado || !this.user) return;
+        try {
+            const response = await fetch(`${this.API_BASE_URL}/perfis/me/historico`, { headers: { 'Authorization': `Bearer ${this.user}` } });
+            if (!response.ok) throw new Error('Não foi possível carregar o histórico.');
+            const dadosPagina = await response.json();
+            if (dadosPagina.content && Array.isArray(dadosPagina.content)) {
+                this.historico = dadosPagina.content;
+                this.historicoCarregado = true;
+            }
+        } catch (error) { if (this.historyListContainer) this.historyListContainer.innerHTML = `<p class="text-center text-danger">Não foi possível carregar o histórico.</p>`; }
+    }
+
+    renderizarHistorico() {
+        if (!this.historyListContainer) return;
+        this.historyListContainer.innerHTML = ''; 
+        if (this.historico.length === 0) { this.historyListContainer.innerHTML = '<p class="text-center text-light">Nenhuma transação encontrada.</p>'; return; }
+        this.historico.forEach(item => {
+            const isCompra = item.tipo === 'COMPRA';
+            const tipoClasse = isCompra ? 'tipo-compra' : 'tipo-devolucao';
+            const iconClasse = isCompra ? 'bi-cart-dash-fill' : 'bi-arrow-counterclockwise';
+            const valorPrefixo = isCompra ? '-' : '+';
+            this.historyListContainer.innerHTML += `
+                <div class="history-item ${tipoClasse}">
+                    <div class="history-item-icon"><i class="bi ${iconClasse}"></i></div>
+                    <div class="history-item-details"><div class="history-item-title">${this.sanitizarTexto(item.cosmeticoNome)}</div><div class="history-item-date">${this.formatarData(item.dataTransacao)}</div></div>
+                    <div class="history-item-value">${valorPrefixo}${item.valor.toLocaleString('pt-BR')}</div>
+                </div>`;
+        });
+    }
 
     preencheCarrousel() {
         if (!this.carrouselItems) return;
@@ -808,10 +1399,6 @@ class VitrineJS {
         return div;
     }
 
-    // ================================================================
-    // HELPERS E MODAIS
-    // ================================================================
-
     gerarEstiloBackground(cores, retornarHexMaisEscuro = false) {
         if (!cores || !Array.isArray(cores) || cores.length === 0) return retornarHexMaisEscuro ? '#000000' : '';
         const getLuminosidade = (hex) => {
@@ -825,7 +1412,7 @@ class VitrineJS {
         });
         if (coresFormatadas.length > 1) coresFormatadas.sort((a, b) => getLuminosidade(b) - getLuminosidade(a));
         if (retornarHexMaisEscuro) return coresFormatadas[coresFormatadas.length - 1];
-        if (coresFormatadas.length > 1) return `background: linear-gradient(180deg, ${coresFormatadas.join(', ')}) !important;`;
+        if (coresFormatadas.length > 1) return `background: linear-gradient(180deg, ${coresFormatadas[0]} 0%, ${coresFormatadas[coresFormatadas.length - 1]} 100%) !important;`;
         return `background: ${coresFormatadas[0]} !important; background-color: ${coresFormatadas[0]} !important;`;
     }
     
@@ -870,7 +1457,7 @@ class VitrineJS {
                     <div class="product-status-badges mb-2">${bundleBadge} ${newBadge} ${forSaleBadge} ${adquiridoBadge}</div>
                     <h5 class="product-name">${this.sanitizarTexto(item.nome || 'Sem nome')}</h5>
                     <p class="product-type">${this.sanitizarTexto(item.tipo || 'Cosmético')}</p>
-                    <div class="product-price mt-2">${item.preco ? `${item.preco} V-Bucks` : 'Item indisponível'}</div>
+                    <div class="product-price mt-2">${item.preco ? `${item.preco.toLocaleString('pt-BR')} V-Bucks` : 'Item indisponível'}</div>
                 </div>
             </div>`;
         card.querySelector('.product-card')?.addEventListener('click', () => this.abrirModalItem(item));

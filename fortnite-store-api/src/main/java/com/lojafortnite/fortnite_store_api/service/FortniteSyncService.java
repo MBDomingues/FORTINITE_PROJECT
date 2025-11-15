@@ -227,7 +227,6 @@ public class FortniteSyncService {
                 }
             }
 
-            // B. É ITEM AVULSO (SEM BUNDLE)
             else {
                 for (CosmeticoApiDTO brItem : brItems) {
                     String cosmeticId = brItem.getId();

@@ -121,8 +121,6 @@ public class CompraService {
         }
     }
 
-    // --- Métodos Auxiliares ---
-
     private void adicionarItemAoUsuario(Usuario usuario, Cosmetico cosmetico) {
         ItemAdquirido item = new ItemAdquirido();
         item.setUsuario(usuario);
