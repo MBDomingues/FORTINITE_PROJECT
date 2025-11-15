@@ -17,4 +17,6 @@ public class CosmeticoApiDTO {
     private TypeDTO type;
     private RarityDTO rarity;
     private ImagesDTO images;
+
+    private SeriesDTO series;
 }

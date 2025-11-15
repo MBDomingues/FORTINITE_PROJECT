@@ -40,4 +40,7 @@ public class Cosmetico {
 
     @Lob
     private String bundleItemsJson;
+
+    @Column(name = "cores_json", length = 1000)
+    private String coresJson;
 }
