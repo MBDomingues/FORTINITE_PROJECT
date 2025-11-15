@@ -6,7 +6,12 @@ import lombok.Data;
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class ImagesDTO {
+    // Usado no Battle Royale
     private String smallIcon;
     private String icon;
     private String featured;
+
+    // Usado em Carros, Lego, Instrumentos
+    private String small;
+    private String large;
 }

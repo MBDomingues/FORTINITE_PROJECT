@@ -30,13 +30,20 @@ public class CosmeticoApiDTO {
     // Metodo auxiliar para pegar a imagem correta independente do tipo
     public String getImagemPrincipal() {
         if (images != null) {
+            // 1. Tenta os ícones padrão (BR)
             if (images.getIcon() != null) return images.getIcon();
             if (images.getSmallIcon() != null) return images.getSmallIcon();
+            if (images.getFeatured() != null) return images.getFeatured();
+
+            // 2. Tenta os ícones de outras categorias (Carros, Lego, etc.)
+            if (images.getLarge() != null) return images.getLarge();
+            if (images.getSmall() != null) return images.getSmall();
         }
-        // Se for música, a imagem vem em 'albumArt'
+
+        // 3. Tenta capa de álbum (Músicas)
         if (albumArt != null) return albumArt;
 
-        return null; // Sem imagem
+        return null; // Sem imagem encontrada
     }
 
     // Metodo auxiliar para garantir que sempre tenha uma raridade

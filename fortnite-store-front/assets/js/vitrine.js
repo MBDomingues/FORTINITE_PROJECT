@@ -16,7 +16,6 @@ class VitrineJS {
         this.historico = [];
         this.historicoCarregado = false;
         this.itensAdquiridosSet = new Set();
-        
         this.carouselIndicators = null;
         this.itemModalElement = null;
         this.currentItemInModal = null;
@@ -117,17 +116,7 @@ class VitrineJS {
 
         if (this.allItemsTab) this.allItemsTab.addEventListener('show.bs.tab', () => { if (!this.todosOsItensCarregados) this.buscaTodosOsItens(); });
 
-        // --- ABA MEUS ITENS ---
-        this.myItemsTabContainer = document.getElementById('my-items-tab-container');
-        this.myItemsTab = document.getElementById('my-items-tab');
-        this.myItemsGrid = document.getElementById('my-items-grid');
-        
-        // Correção: Adiciona o listener corretamente
-        if (this.myItemsTab) {
-            this.myItemsTab.addEventListener('show.bs.tab', () => this.renderizarMeusItens());
-        }
-
-        // --- ABA USUÁRIOS ---
+        // Outras abas
         this.usersTabContainer = document.getElementById('users-tab-container');
         this.usersTab = document.getElementById('users-tab');
         this.usersListContainer = document.getElementById('users-list');
@@ -136,7 +125,12 @@ class VitrineJS {
 
         if (this.usersTab) this.usersTab.addEventListener('show.bs.tab', () => this.handleUsersTabFocus());
         
-        // Modal Perfil
+        this.myItemsTabContainer = document.getElementById('my-items-tab-container');
+        this.myItemsTab = document.getElementById('my-items-tab');
+        this.myItemsGrid = document.getElementById('my-items-grid');
+        
+        if (this.myItemsTab) this.myItemsTab.addEventListener('show.bs.tab', () => this.renderizarMeusItens());
+
         this.historyTabButton = document.getElementById('profile-tab-history-tab');
         this.historyListContainer = document.getElementById('modal-user-history');
         this.itemsTabButton = document.getElementById('profile-tab-items-tab'); 
@@ -198,7 +192,6 @@ class VitrineJS {
             this.atualizaNavUsuario(data);
             this.buscaHistoricoUsuario();
             
-            // --- CORREÇÃO IMPORTANTE: Renderiza meus itens assim que os dados chegam ---
             if(this.myItemsGrid) {
                 this.renderizarMeusItens();
             }
@@ -225,13 +218,10 @@ class VitrineJS {
         document.getElementById('nav-perfil-btn')?.addEventListener('click', () => this.preencherModalPerfil(this.userData));
     }
 
-    // --- RENDERIZAR MEUS ITENS (TAB) ---
-
     renderizarMeusItens() {
         if (!this.myItemsGrid) return;
         this.myItemsGrid.innerHTML = ''; 
         
-        // Garante que pegamos o array, mesmo se userData for nulo no inicio
         const itensAdquiridos = this.userData ? (this.userData.itensAdquiridos || []) : [];
 
         if (itensAdquiridos.length === 0) {
@@ -239,24 +229,20 @@ class VitrineJS {
             return;
         }
 
-        // Normaliza os dados para o formato que a classe espera
         let itensProcessados = itensAdquiridos.map(itemData => {
-            // Detecta se é bundle (pode vir como flag ou array de filhos)
             const isBundle = itemData.isBundle || (itemData.bundleItems && itemData.bundleItems.length > 0);
-            
             return new ValidadorItem(
                 itemData.id, itemData.nome, itemData.tipo, itemData.raridade,
                 itemData.preco, itemData.urlImagem, itemData.descricao,
                 itemData.isNew, itemData.isForSale, 
-                true, // isAdquirido
+                true, 
                 itemData.dataInclusao,
                 itemData.cores, 
-                isBundle, // Passa explicitamente se é bundle
+                isBundle, 
                 itemData.bundleItems
             ).validaDados();
         });
 
-        // --- CHAMA COM TRUE para mostrar o Card Pai do Bundle ---
         const listaFinal = this.organizarItensComBundles(itensProcessados, true);
         
         const fragmento = document.createDocumentFragment();
@@ -265,8 +251,6 @@ class VitrineJS {
         }
         this.myItemsGrid.appendChild(fragmento);
     }
-
-    // ... (O restante do código abaixo permanece o mesmo, com o mapa de tipos corrigido) ...
 
     preencherModalPerfil(userData) {
         if (!userData) return;
@@ -338,7 +322,7 @@ class VitrineJS {
                     ).validaDados();
                 });
                 this.renderizaItens(); 
-                this.preencheCarrousel(); 
+                this.preencheCarrousel(); // AGORA EXISTE
                 Swal.close();
             } else { throw new Error("API /loja/todos não retornou um array."); }
         } catch (error) {
@@ -347,6 +331,10 @@ class VitrineJS {
             this.mostrarErro('Erro ao carregar itens da loja.', this.cosmeticosGrid);
         }
     }
+
+    // ================================================================
+    // LÓGICA DE ORDENAÇÃO POR COR (HSL)
+    // ================================================================
 
     hexToHSL(hex) {
         let result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})/i.exec(hex);
@@ -398,6 +386,10 @@ class VitrineJS {
         });
     }
 
+    // ================================================================
+    // LOGICA MESTRE: BUNDLES + ORDENAÇÃO
+    // ================================================================
+
     organizarItensComBundles(listaTotal, mostrarBundlesPais = false) {
         const processadosIds = new Set();
         const listaFinal = [];
@@ -440,15 +432,24 @@ class VitrineJS {
         return listaFinal;
     }
 
+    // ================================================================
+    // RENDERIZAÇÃO E FILTROS
+    // ================================================================
+
     renderizaItens() {
         if (!this.cosmeticosGrid) return;
         
         const mapaTipos = {
-            'outfit': 'traje', 'skin': 'traje',
+            'outfit': 'traje', 'skin': 'traje', 'traje': 'traje',
             'backpack': 'acessório para as costas', 'mochila': 'acessório para as costas',
-            'pickaxe': 'picareta', 'glider': 'asa-delta',
-            'emote': 'gesto', 'wrap': 'envelopamento', 'pet': 'mascote',
-            'shoes': 'sapatos', 'sapatos': 'sapatos'
+            'pickaxe': 'picareta', 'picareta': 'picareta',
+            'glider': 'asa-delta', 'asa-delta': 'asa-delta', 'asa delta': 'asa-delta',
+            'emote': 'gesto', 'gesto': 'gesto',
+            'wrap': 'envelopamento', 'envelopamento': 'envelopamento',
+            'pet': 'mascote', 'mascote': 'mascote',
+            'shoes': 'sapatos', 'sapatos': 'sapatos',
+            'contrail': 'rastro de fumaça', 'rastro': 'rastro de fumaça',
+            'banner': 'estandarte', 'estandarte': 'estandarte'
         };
 
         let tipoSelecionado = this.shopTypeFilter ? this.shopTypeFilter.value.toLowerCase() : '';
@@ -529,7 +530,9 @@ class VitrineJS {
             'emote': 'Gesto', 'gesto': 'Gesto',
             'wrap': 'Envelopamento', 'envelopamento': 'Envelopamento',
             'pet': 'Mascote', 'mascote': 'Mascote',
-            'shoes': 'Sapatos', 'sapatos': 'Sapatos'
+            'shoes': 'Sapatos', 'sapatos': 'Sapatos',
+            'contrail': 'Rastro de Fumaça', 'rastro': 'Rastro de Fumaça',
+            'banner': 'Estandarte', 'estandarte': 'Estandarte'
         };
         
         let tipoRaw = this.allTypeFilter ? this.allTypeFilter.value.toLowerCase() : '';
@@ -614,6 +617,10 @@ class VitrineJS {
     gerarHTMLVazio(mensagem) {
         return `<div class="col-12 w-100 d-flex flex-column justify-content-center align-items-center" style="grid-column: 1 / -1; min-height: 200px;"><i class="bi bi-search text-secondary mb-3" style="font-size: 2rem; opacity: 0.5;"></i><p class="text-center text-light fs-5 m-0">${mensagem}</p></div>`;
     }
+
+    // ================================================================
+    // OUTRAS FUNCIONALIDADES (Usuários, Histórico, Carrossel)
+    // ================================================================
 
     async handleUsersTabFocus() {
         if (this.usuariosCarregados) return; 
@@ -726,6 +733,10 @@ class VitrineJS {
         });
     }
 
+    // ================================================================
+    // CARROSSEL (AGORA SIM, RESTAURADO!)
+    // ================================================================
+
     preencheCarrousel() {
         if (!this.carrouselItems) return;
         const bundles = this.itens.filter(item => item.isBundle === true && !item.isAdquirido);
@@ -796,6 +807,10 @@ class VitrineJS {
         div.querySelector('.btn-carousel-view')?.addEventListener('click', () => this.abrirModalItem(item));
         return div;
     }
+
+    // ================================================================
+    // HELPERS E MODAIS
+    // ================================================================
 
     gerarEstiloBackground(cores, retornarHexMaisEscuro = false) {
         if (!cores || !Array.isArray(cores) || cores.length === 0) return retornarHexMaisEscuro ? '#000000' : '';
