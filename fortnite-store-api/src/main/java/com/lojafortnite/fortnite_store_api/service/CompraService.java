@@ -27,7 +27,7 @@ public class CompraService {
 
     @Transactional
     public void comprarCosmetico(Long usuarioId, String cosmeticoId) {
-        // ... (A LÓGICA DE COMPRA PERMANECE A MESMA QUE JÁ FUNCIONA) ...
+    
         Usuario usuario = usuarioRepository.findById(usuarioId)
                 .orElseThrow(() -> new RuntimeException(ERRO_NAO_ENCONTRADO));
 
