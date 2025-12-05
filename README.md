@@ -19,15 +19,6 @@ Aplicação Web Full Stack. O sistema simula uma loja virtual de cosméticos do 
 
 ---
 
-## 🚀 Deploy (Acesse Online)
-
-A aplicação está rodando em infraestrutura de nuvem na **Microsoft Azure**:
-
-🔗 **Acesse a Loja:** [http://130.213.12.104](http://130.213.12.104)
-*(Frontend servido via Nginx e Backend via Docker na mesma instância)*
-
----
-
 ## 🛠️ Tecnologias Utilizadas
 
 ### Backend (API)
