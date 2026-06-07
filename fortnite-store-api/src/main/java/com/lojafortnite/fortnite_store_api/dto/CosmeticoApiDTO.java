@@ -1,6 +1,6 @@
 package com.lojafortnite.fortnite_store_api.dto;
 
-import com.fasterxml.jackson.annotation.JsonAlias; // Importe isto
+import com.fasterxml.jackson.annotation.JsonAlias; 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
 import java.time.Instant;

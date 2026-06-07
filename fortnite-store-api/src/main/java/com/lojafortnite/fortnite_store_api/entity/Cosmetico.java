@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 import java.time.Instant;
 
 
-//Classe entidade Cosmeticos para o BD
+
 @Entity
 @Table(name = "TB_COSMETICO")
 @Data

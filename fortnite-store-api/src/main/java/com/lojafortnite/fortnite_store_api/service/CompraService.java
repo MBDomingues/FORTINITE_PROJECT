@@ -49,7 +49,7 @@ public class CompraService {
 
         registrarHistorico(usuario, cosmeticoPrincipal, HistoricoTransacao.TipoTransacao.COMPRA, cosmeticoPrincipal.getPreco());
 
-        // Lógica de adicionar filhos do Bundle na compra
+
         if (Boolean.TRUE.equals(cosmeticoPrincipal.getIsBundle())) {
             processarItensDoBundle(usuarioId, cosmeticoPrincipal, true);
         }
@@ -61,28 +61,28 @@ public class CompraService {
         Usuario usuario = usuarioRepository.findById(usuarioId)
                 .orElseThrow(() -> new RuntimeException(ERRO_NAO_ENCONTRADO));
 
-        // 1. Encontrar o registro de posse do item principal (o que está sendo devolvido)
+
         ItemAdquirido itemAdquirido = itemAdquiridoRepository
                 .findByUsuarioIdAndCosmeticoId(usuarioId, cosmeticoId)
                 .orElseThrow(() -> new RuntimeException("Cosmético não possuído."));
 
-        // 2. Recupera o objeto cosmético para saber preço e se é bundle
+
         Cosmetico cosmetico = itemAdquirido.getCosmetico();
         Integer valorEstorno = cosmetico.getPreco();
 
-        // 3. Estornar Saldo
+
         usuario.setCreditos(usuario.getCreditos() + valorEstorno);
         usuarioRepository.save(usuario);
 
-        // 4. Remover Posse do Item Principal
+
         itemAdquiridoRepository.delete(itemAdquirido);
 
-        // 5. Registrar Histórico
+
         registrarHistorico(usuario, cosmetico, HistoricoTransacao.TipoTransacao.DEVOLUCAO, valorEstorno);
 
-        // --- 6. NOVA LÓGICA: REMOVER ITENS DO BUNDLE ---
+
         if (Boolean.TRUE.equals(cosmetico.getIsBundle())) {
-            // Passamos 'false' para indicar que é uma remoção
+
             processarItensDoBundle(usuarioId, cosmetico, false);
         }
     }
@@ -96,27 +96,26 @@ public class CompraService {
 
                 for (String idFilho : idsFilhos) {
                     if (isCompra) {
-                        // --- LÓGICA DE ADICIONAR (COMPRA) ---
+
                         boolean jaTemFilho = itemAdquiridoRepository.existsByUsuarioIdAndCosmeticoId(usuarioId, idFilho);
                         if (!jaTemFilho) {
                             cosmeticoRepository.findById(idFilho).ifPresent(itemFilho -> {
-                                // Precisamos do objeto Usuario completo para salvar
+
                                 usuarioRepository.findById(usuarioId).ifPresent(u -> adicionarItemAoUsuario(u, itemFilho));
                             });
                         }
                     } else {
-                        // --- LÓGICA DE REMOVER (DEVOLUÇÃO) ---
-                        // Busca o registro de posse desse item filho específico para este usuário
+
+
                         itemAdquiridoRepository.findByUsuarioIdAndCosmeticoId(usuarioId, idFilho)
                                 .ifPresent(itemFilhoAdquirido -> {
-                                    // Deleta o item filho do inventário
+
                                     itemAdquiridoRepository.delete(itemFilhoAdquirido);
                                 });
                     }
                 }
             } catch (Exception e) {
                 System.err.println("Erro ao processar itens do bundle (Ação: " + (isCompra ? "Compra" : "Devolução") + "): " + e.getMessage());
-                // Em produção, você pode decidir lançar uma exceção aqui para fazer rollback de tudo
             }
         }
     }

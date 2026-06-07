@@ -10,9 +10,7 @@ import java.util.List;
 
 public class CosmeticoSpecification {
 
-    /**
-     * Constrói a Specification dinâmica baseada nos filtros do DTO.
-     */
+
     public static Specification<Cosmetico> comFiltros(CosmeticoFiltroRequest filtro) {
         return (root, query, builder) -> {
             List<Predicate> predicates = new ArrayList<>();

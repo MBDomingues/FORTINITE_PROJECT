@@ -74,10 +74,10 @@ public class UsuarioService {
     @Transactional(readOnly = true)
     public Page<HistoricoTransacaoDTO> listarHistoricoDoUsuario(Long usuarioId, Pageable pageable) {
 
-        // 1. Busca a página de transações (agora o 'historicoRepository' existe)
+
         Page<HistoricoTransacao> historicoPage = historicoRepository.findByUsuarioId(usuarioId, pageable);
 
-        // 2. Converte a Page<Entidade> para Page<DTO>
+        
         return historicoPage.map(HistoricoTransacaoDTO::new);
     }
 }

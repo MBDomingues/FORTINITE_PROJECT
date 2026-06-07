@@ -1,7 +1,4 @@
-/* ==========================================================================
-   CONFIGURAÇÕES GERAIS
-   Define a fonte base, o degradê de fundo e o alinhamento central da página.
-   ========================================================================== */
+
 body {
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     min-height: 100vh;
@@ -11,10 +8,7 @@ body {
     justify-content: center;
 }
 
-/* ==========================================================================
-   BARRA DE NAVEGAÇÃO (NAVBAR)
-   Estilização da barra superior com efeito de vidro.
-   ========================================================================== */
+
 .navbar {
     background: rgba(0, 0, 0, 0.8) !important;
     backdrop-filter: blur(10px);
@@ -24,7 +18,7 @@ body {
     width: 100%;
 }
 
-/* Estilização da Logo (Texto com gradiente) */
+
 .navbar-brand {
     font-size: 1.8rem;
     font-weight: bold;
@@ -34,10 +28,7 @@ body {
     background-clip: text;
 }
 
-/* ==========================================================================
-   CARTÃO DE LOGIN
-   Container centralizado com efeito glassmorphism.
-   ========================================================================== */
+
 .login-container {
     width: 100%;
     max-width: 450px;
@@ -54,7 +45,7 @@ body {
     border: 2px solid rgba(255, 255, 255, 0.1);
 }
 
-/* Cabeçalho do Login (Título e Subtítulo) */
+
 .login-header {
     text-align: center;
     margin-bottom: 2rem;
@@ -75,10 +66,7 @@ body {
     font-size: 1rem;
 }
 
-/* ==========================================================================
-   CAMPOS DE FORMULÁRIO (INPUTS)
-   Estilização dos inputs flutuantes (floating labels).
-   ========================================================================== */
+
 .form-floating {
     margin-bottom: 1.5rem;
 }
@@ -92,7 +80,7 @@ body {
     height: 60px;
 }
 
-/* Estado de foco do input */
+
 .form-floating .form-control:focus {
     background: rgba(255, 255, 255, 0.15);
     border-color: #00d4ff;
@@ -109,16 +97,13 @@ body {
     padding: 1rem 1rem;
 }
 
-/* Cor do label quando o input está ativo */
+
 .form-floating .form-control:focus ~ label,
 .form-floating .form-control:not(:placeholder-shown) ~ label {
     color: #00d4ff;
 }
 
-/* ==========================================================================
-   CHECKBOX "LEMBRAR DE MIM"
-   Estilização personalizada.
-   ========================================================================== */
+
 .form-check {
     margin-bottom: 1.5rem;
 }
@@ -146,10 +131,7 @@ body {
     cursor: pointer;
 }
 
-/* ==========================================================================
-   BOTÕES DE AÇÃO
-   Botão de entrar e botão social (Google).
-   ========================================================================== */
+
 .btn-login-submit {
     width: 100%;
     background: linear-gradient(45deg, #00d4ff, #7b2ff7);
@@ -172,7 +154,7 @@ body {
     transform: translateY(0);
 }
 
-/* Estado desabilitado (Loading) */
+
 .btn-login-submit:disabled {
     opacity: 0.7;
     cursor: not-allowed;
@@ -195,10 +177,7 @@ body {
     color: #fff;
 }
 
-/* ==========================================================================
-   LINKS E ELEMENTOS AUXILIARES
-   "Esqueci minha senha", "Cadastre-se", Divisores e Alertas.
-   ========================================================================== */
+
 .forgot-password {
     color: #00d4ff;
     text-decoration: none;
@@ -211,7 +190,7 @@ body {
     text-decoration: underline;
 }
 
-/* Linha divisória "OU" */
+
 .divider {
     display: flex;
     align-items: center;
@@ -250,7 +229,7 @@ body {
     text-decoration: underline;
 }
 
-/* Alertas de Sucesso/Erro */
+
 .alert {
     border-radius: 12px;
     border: none;
@@ -271,10 +250,7 @@ body {
     border: 1px solid rgba(25, 135, 84, 0.4);
 }
 
-/* ==========================================================================
-   RESPONSIVIDADE
-   Ajustes para dispositivos móveis.
-   ========================================================================== */
+
 @media (max-width: 576px) {
     .login-card {
         padding: 2rem 1.5rem;

@@ -1,16 +1,14 @@
-/* ========================================
-   1. RESET E VARIÁVEIS GLOBAIS
-   ======================================== */
+
 :root {
-    --primary-color: #00d4ff;          /* Azul Neon principal */
-    --secondary-color: #7b2ff7;        /* Roxo Neon secundário */
-    --dark-bg: rgba(0, 0, 0, 0.8);     /* Fundo escuro translúcido */
-    --card-bg: rgba(255, 255, 255, 0.1); /* Fundo de cards (efeito vidro) */
-    --text-primary: #fff;              /* Texto branco puro */
-    --text-secondary: rgba(255, 255, 255, 0.7); /* Texto cinza claro */
-    --border-color: rgba(255, 255, 255, 0.1);   /* Bordas sutis */
-    --shadow-sm: 0 4px 20px rgba(0, 0, 0, 0.3); /* Sombra suave */
-    --shadow-lg: 0 10px 40px rgba(0, 0, 0, 0.4);/* Sombra intensa */
+    --primary-color: #00d4ff;          
+    --secondary-color: #7b2ff7;        
+    --dark-bg: rgba(0, 0, 0, 0.8);     
+    --card-bg: rgba(255, 255, 255, 0.1); 
+    --text-primary: #fff;              
+    --text-secondary: rgba(255, 255, 255, 0.7); 
+    --border-color: rgba(255, 255, 255, 0.1);   
+    --shadow-sm: 0 4px 20px rgba(0, 0, 0, 0.3); 
+    --shadow-lg: 0 10px 40px rgba(0, 0, 0, 0.4);
 }
 
 body, html {
@@ -19,14 +17,12 @@ body, html {
     overflow-x: hidden;
 }
 
-/* Fix para Scroll e Navbar */
+
 html { overflow-y: scroll; }
 body.modal-open { padding-right: 0 !important; overflow-y: scroll !important; }
 .navbar, .navbar.sticky-top, .navbar.fixed-top { padding-right: 0 !important; margin-right: 0 !important; }
 
-/* ========================================
-   2. HEADER / NAVBAR
-   ======================================== */
+
 .navbar {
     background: var(--dark-bg) !important;
     backdrop-filter: blur(10px);
@@ -37,7 +33,7 @@ body.modal-open { padding-right: 0 !important; overflow-y: scroll !important; }
     font-size: 1.8rem; font-weight: 700; color: var(--primary-color); letter-spacing: 0.5px;
 }
 
-/* Botões Navbar */
+
 .btn-login, .btn-logout {
     background: transparent; color: var(--text-primary); border: 2px solid var(--text-primary);
     border-radius: 25px; letter-spacing: 0.5px; padding: 0.5rem 1.5rem; transition: all 0.3s ease;
@@ -60,12 +56,10 @@ body.modal-open { padding-right: 0 !important; overflow-y: scroll !important; }
     padding: 0.5rem 1.5rem; letter-spacing: 0.5px; font-weight: 600; transition: all 0.3s ease;
 }
 
-/* ========================================
-   3. CAROUSEL & NAVEGAÇÃO
-   ======================================== */
+
 .carousel {
     border-radius: 20px; overflow: hidden; box-shadow: var(--shadow-lg);
-    margin-top: 2rem; background: #000; /* Fundo preto fallback */
+    margin-top: 2rem; background: #000; 
 }
 
 .carousel-item {
@@ -79,7 +73,7 @@ body.modal-open { padding-right: 0 !important; overflow-y: scroll !important; }
     text-align: left; transform: none !important;
 }
 
-/* Indicadores (Pontinhos) */
+
 .carousel-indicators { bottom: 15px; }
 .carousel-indicators [data-bs-target] {
     width: 12px; height: 12px; border-radius: 50%; background-color: rgba(255, 255, 255, 0.3);
@@ -89,7 +83,7 @@ body.modal-open { padding-right: 0 !important; overflow-y: scroll !important; }
     background-color: var(--primary-color); box-shadow: 0 0 8px var(--primary-color); transform: scale(1.2);
 }
 
-/* Controles Externos (Setas Abaixo do Carrossel) */
+
 .btn-external-nav {
     width: 50px; height: 50px; border-radius: 50%;
     background: rgba(255, 255, 255, 0.05); border: 2px solid rgba(255, 255, 255, 0.2);
@@ -102,46 +96,44 @@ body.modal-open { padding-right: 0 !important; overflow-y: scroll !important; }
 }
 .btn-external-nav:active { transform: scale(0.95); }
 
-/* Oculta controles antigos internos se existirem */
+
 .carousel-control-prev, .carousel-control-next { display: none !important; }
 
-/* ========================================
-   4. TABS E TÍTULOS
-   ======================================== */
+
 
 .nav-tabs-custom {
     border-bottom: none !important;
-    gap: 15px; /* Espaço entre os botões */
+    gap: 15px; 
     justify-content: center;
     margin-top: 3rem !important;
     margin-bottom: 2rem;
 }
 
 .nav-tabs-custom .nav-link {
-    /* --- Tamanho e Espaçamento Aumentados --- */
-    font-size: 1.3rem;       /* Fonte maior */
-    padding: 1rem 2.5rem;    /* Botão mais gordo e largo */
-    font-weight: 700;        /* Texto em negrito */
-    letter-spacing: 1px;
-    border-radius: 50px;     /* Formato de pílula */
     
-    /* --- Cores e Bordas (Estado Normal) --- */
+    font-size: 1.3rem;       
+    padding: 1rem 2.5rem;    
+    font-weight: 700;        
+    letter-spacing: 1px;
+    border-radius: 50px;     
+    
+    
     background-color: rgba(255, 255, 255, 0.05);
     border: 2px solid rgba(255, 255, 255, 0.2);
-    color: #fff;             /* Texto BRANCO */
+    color: #fff;             
     
     transition: all 0.3s ease;
     display: flex;
     align-items: center;
-    gap: 10px; /* Espaço entre ícone e texto */
+    gap: 10px; 
 }
 
-/* Ajuste do tamanho do ícone */
+
 .nav-tabs-custom .nav-link i {
     font-size: 1.5rem;
 }
 
-/* Estado Hover (Passar o mouse) */
+
 .nav-tabs-custom .nav-link:hover {
     background-color: rgba(255, 255, 255, 0.15);
     border-color: var(--primary-color);
@@ -150,7 +142,7 @@ body.modal-open { padding-right: 0 !important; overflow-y: scroll !important; }
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
 }
 
-/* Estado Ativo (Selecionado) */
+
 .nav-tabs-custom .nav-link.active {
     background: var(--primary-color);
     color: #fff !important;
@@ -178,7 +170,7 @@ body.modal-open { padding-right: 0 !important; overflow-y: scroll !important; }
     margin-top: 1rem;
 }
 
-/* Ajuste Responsivo para as Tabs */
+
 @media (max-width: 768px) {
     .nav-tabs-custom {
         flex-direction: column;
@@ -197,9 +189,7 @@ body.modal-open { padding-right: 0 !important; overflow-y: scroll !important; }
     }
 }
 
-/* ========================================
-   5. CARDS DE PRODUTOS
-   ======================================== */
+
 .product-card {
     background: var(--card-bg); border-radius: 15px; overflow: hidden;
     transition: all 0.3s ease; cursor: pointer; border: 2px solid transparent; height: 100%;
@@ -220,7 +210,7 @@ body.modal-open { padding-right: 0 !important; overflow-y: scroll !important; }
 .product-type { color: var(--text-secondary); font-size: 0.9rem; letter-spacing: 0.3px; }
 .product-price { font-size: 1.5rem; font-weight: 700; color: var(--primary-color); }
 
-/* Badges */
+
 .product-status-badges { display: flex; flex-wrap: wrap; gap: 6px; min-height: 24px; }
 .status-badge {
     font-size: 0.75rem; padding: 0.3em 0.6em; font-weight: 600; border-radius: 6px;
@@ -230,92 +220,88 @@ body.modal-open { padding-right: 0 !important; overflow-y: scroll !important; }
 .badge-for-sale { background-color: #28a745; }
 .badge-adquirido { background-color: #6c757d; }
 
-/* ========================================
-   6. RARIDADES E CORES (Corrigido)
-   ======================================== */
 
-/* --- RARIDADES PADRÃO (Adicionado seletores em Inglês para bater com o JS) --- */
 
-/* Comum (Cinza) */
+
+
+
 .bg-rarity-comum, .bg-rarity-common, .rarity-common { 
     background: radial-gradient(circle, #b0b0b0 0%, #6e6e6e 100%); 
 }
 
-/* Incomum (Verde) */
+
 .bg-rarity-incomum, .bg-rarity-uncommon, .rarity-uncommon { 
     background: radial-gradient(circle, #60aa3a 0%, #3d6c24 100%); 
 }
 
-/* Raro (Azul) */
+
 .bg-rarity-raro, .bg-rarity-rare, .rarity-rare { 
     background: radial-gradient(circle, #4ec1f3 0%, #2b6d8a 100%); 
 }
 
-/* Épico (Roxo) */
+
 .bg-rarity-epico, .bg-rarity-epic, .rarity-epic { 
     background: radial-gradient(circle, #bf6ee0 0%, #733e8a 100%); 
 }
 
-/* Lendário (Laranja/Dourado) - AQUI ESTAVA O ERRO */
+
 .bg-rarity-lendario, .bg-rarity-legendary, .rarity-legendary { 
     background: radial-gradient(circle, #e9a748 0%, #b86f16 100%); 
 }
 
-/* --- SÉRIES ESPECIAIS (Novas Cores) --- */
 
-/* Marvel e Genérico de Série (Vermelho) */
+
+
 .bg-rarity-marvel, .bg-rarity-serie, .rarity-serie { 
     background: radial-gradient(circle, #fa4444 0%, #8a1c1c 100%); 
 }
 
-/* Série Ícones (Ciano/Turquesa) */
+
 .bg-rarity-icon, .rarity-icon { 
     background: radial-gradient(circle, #33e8e8 0%, #007f85 100%); 
 }
 
-/* Série DC (Azul Escuro) */
+
 .bg-rarity-dc, .rarity-dc { 
     background: radial-gradient(circle, #56668c 0%, #202945 100%); 
 }
 
-/* Série das Sombras (Preto/Cinza) */
+
 .bg-rarity-shadow, .rarity-shadow { 
     background: radial-gradient(circle, #575757 0%, #1a1a1a 100%); 
 }
 
-/* Série Congelada (Azul Gelo) */
+
 .bg-rarity-frozen, .rarity-frozen { 
     background: radial-gradient(circle, #a5e6f0 0%, #4885a3 100%); 
 }
 
-/* Série Lava (Laranja Fogo) */
+
 .bg-rarity-lava, .rarity-lava { 
     background: radial-gradient(circle, #ea9d45 0%, #7a1c00 100%); 
 }
 
-/* Série Obscura (Roxo Escuro) */
+
 .bg-rarity-dark, .rarity-dark { 
     background: radial-gradient(circle, #d141e0 0%, #460352 100%); 
 }
 
-/* Série Star Wars (Azul Noite) */
+
 .bg-rarity-starwars, .rarity-starwars { 
     background: radial-gradient(circle, #24294a 0%, #080a14 100%); 
-    border-color: #ffe81f !important; /* Borda amarela opcional */
+    border-color: #ffe81f !important; 
 }
 
-/* Série Lendas dos Jogos (Roxo Azulado) */
+
 .bg-rarity-gaming, .rarity-gaming { 
     background: radial-gradient(circle, #5848a8 0%, #261e4f 100%); 
 }
 
-/* Série Glup (Verde Água) */
+
 .bg-rarity-slurp, .rarity-slurp { 
     background: radial-gradient(circle, #00f2d5 0%, #02695b 100%); 
 }
-/* ========================================
-   7. FORMULÁRIOS E FILTROS
-   ======================================== */
+
 .form-control, .form-select {
     background: var(--card-bg); border: 2px solid rgba(255, 255, 255, 0.3);
     color: var(--text-primary); border-radius: 10px; letter-spacing: 0.3px;
@@ -328,9 +314,7 @@ body.modal-open { padding-right: 0 !important; overflow-y: scroll !important; }
 .form-label { font-weight: 600; color: var(--text-primary); }
 .form-select option { background: #764ba2; color: var(--text-primary); }
 
-/* ========================================
-   8. MODALS
-   ======================================== */
+
 .modal-content {
     background: rgba(0, 0, 0, 0.95); backdrop-filter: blur(20px);
     border: 2px solid var(--border-color); border-radius: 20px; color: var(--text-primary);
@@ -341,7 +325,7 @@ body.modal-open { padding-right: 0 !important; overflow-y: scroll !important; }
 .modal-body { padding: 2rem; }
 .modal-footer { border-top: 1px solid var(--border-color); padding: 1.5rem; display: flex; justify-content: flex-end; }
 
-/* Modal de Item */
+
 .item-modal-image {
     width: 100%; height: 300px; display: flex; align-items: center; justify-content: center;
     font-size: 6rem; position: relative; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -367,7 +351,7 @@ body.modal-open { padding-right: 0 !important; overflow-y: scroll !important; }
 .item-detail-label { font-size: 0.8rem; color: rgba(255, 255, 255, 0.6); text-transform: uppercase; }
 .item-detail-value { font-size: 1rem; font-weight: 600; color: var(--text-primary); }
 
-/* Botões Compra/Devolução Modal */
+
 .btn-buy-item, .btn-devolver-item {
     display: flex; align-items: center; justify-content: center; gap: 0.5rem; width: 100%;
     padding: 0.75rem; border: none; border-radius: 12px; font-weight: 600; letter-spacing: 0.5px;
@@ -377,9 +361,7 @@ body.modal-open { padding-right: 0 !important; overflow-y: scroll !important; }
 .btn-devolver-item { background: linear-gradient(45deg, #dc3545, #ff6b00); color: var(--text-primary); }
 .btn-buy-item:hover, .btn-devolver-item:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0,0,0,0.4); }
 
-/* ========================================
-   9. PERFIL DO USUÁRIO
-   ======================================== */
+
 .profile-avatar-large {
     width: 120px; height: 120px; border-radius: 50%; background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
     display: flex; align-items: center; justify-content: center; font-size: 3rem; font-weight: 700; color: var(--text-primary);
@@ -396,19 +378,17 @@ body.modal-open { padding-right: 0 !important; overflow-y: scroll !important; }
 .stat-value { font-size: 1.8rem; font-weight: 700; color: var(--primary-color); }
 .stat-label { font-size: 0.85rem; color: var(--text-secondary); }
 
-/* ========================================
-   9. PERFIL DO USUÁRIO - MINI CARDS
-   ======================================== */
+
 
 .user-items-preview {
     display: grid;
-    /* Mobile First: Começa com 2 colunas para celulares */
+    
     grid-template-columns: repeat(2, 1fr); 
     gap: 1rem;
     width: 100%;
 }
 
-/* Breakpoint: A partir de tablets/desktop (768px), força 4 colunas */
+
 @media (min-width: 768px) {
     .user-items-preview {
         grid-template-columns: repeat(4, 1fr);
@@ -422,34 +402,34 @@ body.modal-open { padding-right: 0 !important; overflow-y: scroll !important; }
     border: 1px solid var(--border-color);
     transition: all 0.3s ease;
     position: relative;
-    cursor: pointer; /* Indica que é interativo */
+    cursor: pointer; 
 }
 
-/* Efeito Hover: Sobe o card e acende a borda com a cor primária */
+
 .user-item-mini-card:hover {
     transform: translateY(-5px);
     border-color: var(--primary-color);
-    box-shadow: 0 5px 20px rgba(0, 212, 255, 0.15); /* Brilho suave */
+    box-shadow: 0 5px 20px rgba(0, 212, 255, 0.15); 
 }
 
 .user-item-mini-image {
-    aspect-ratio: 1 / 1; /* Garante que seja sempre quadrado */
+    aspect-ratio: 1 / 1; 
     width: 100%;
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 10px; /* Espaço para a imagem não colar na borda */
+    padding: 10px; 
 }
 
 .user-item-mini-image img {
     width: 100%;
     height: 100%;
-    object-fit: contain; /* Mantém a proporção da imagem */
-    filter: drop-shadow(0 5px 10px rgba(0,0,0,0.5)); /* Sombra na imagem PNG */
+    object-fit: contain; 
+    filter: drop-shadow(0 5px 10px rgba(0,0,0,0.5)); 
     transition: transform 0.3s ease;
 }
 
-/* Zoom na imagem ao passar o mouse no card */
+
 .user-item-mini-card:hover .user-item-mini-image img {
     transform: scale(1.1);
 }
@@ -459,12 +439,12 @@ body.modal-open { padding-right: 0 !important; overflow-y: scroll !important; }
     font-weight: 600;
     padding: 0.6rem 0.5rem;
     text-align: center;
-    background: rgba(0, 0, 0, 0.4); /* Fundo mais escuro para o texto */
+    background: rgba(0, 0, 0, 0.4); 
     backdrop-filter: blur(5px);
     color: var(--text-primary);
     border-top: 1px solid var(--border-color);
     
-    /* Tratamento de texto longo */
+    
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -479,9 +459,7 @@ body.modal-open { padding-right: 0 !important; overflow-y: scroll !important; }
 .history-item.tipo-compra .history-item-value { color: #ff6b6b; }
 .history-item.tipo-devolucao .history-item-value { color: #69db7c; }
 
-/* ========================================
-   10. SWEET ALERT 2
-   ======================================== */
+
 .swal2-backdrop-show { background: rgba(0, 0, 0, 0.7) !important; backdrop-filter: blur(5px) !important; }
 .swal2-popup {
     background: rgba(0, 0, 0, 0.75) !important; backdrop-filter: blur(15px) !important;
@@ -499,17 +477,15 @@ body.modal-open { padding-right: 0 !important; overflow-y: scroll !important; }
     border-radius: 25px !important; padding: 0.6em 1.8em !important;
 }
 
-/* ========================================
-   11. RESPONSIVIDADE GERAL
-   ======================================== */
+
 @media (max-width: 768px) {
-    /* Responsividade Navbar */
+    
     #nav-itens { gap: 0.3rem !important; }
     .nav-creditos { font-size: 0.75rem; padding: 0.3rem 0.6rem; margin-right: 0 !important; }
     .btn-perfil, .btn-logout { font-size: 0 !important; padding: 0.4rem 0.6rem !important; border-radius: 50% !important; width: 35px; height: 35px; display: flex; align-items: center; justify-content: center; }
     .btn-perfil i, .btn-logout i { font-size: 1.1rem !important; margin-right: 0 !important; }
 
-    /* Responsividade Carrossel */
+    
     .carousel-item { height: 500px; }
     .carousel-caption h3, .carousel-caption h1 { font-size: 2rem !important; }
     .carousel-caption { flex-direction: column !important; align-items: flex-start !important; padding: 20px !important; }
@@ -517,18 +493,18 @@ body.modal-open { padding-right: 0 !important; overflow-y: scroll !important; }
     .carousel-caption .d-flex.gap-3 { margin-top: 15px !important; width: 100%; }
     .btn-carousel-buy, .btn-carousel-view { flex: 1; padding: 0.6rem 1rem !important; font-size: 0.95rem !important; }
 
-    /* Oculta indicadores no mobile */
+    
     .carousel-indicators { display: none !important; }
     
-    /* Força exibição dos controles externos no mobile */
+    
     #carousel-external-controls { display: flex !important; margin-top: 1rem !important; }
 
-    /* Responsividade Perfil */
+    
     .profile-stats { grid-template-columns: 1fr; }
     .user-items-preview { grid-template-columns: repeat(3, 1fr); }
     .modal-footer { justify-content: center; }
 
-    /* Tabela Responsiva */
+    
     .custom-mobile-table thead { display: none; }
     .custom-mobile-table tr { display: block; margin-bottom: 1rem; background-color: rgba(255, 255, 255, 0.05); border: 1px solid var(--border-color); border-radius: 8px; }
     .custom-mobile-table td { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); padding: 0.75rem; text-align: right; }
@@ -536,14 +512,14 @@ body.modal-open { padding-right: 0 !important; overflow-y: scroll !important; }
     .custom-mobile-table td::before { content: attr(data-label); float: left; font-weight: bold; font-size: 0.8rem; color: rgba(255, 255, 255, 0.6); }
 }
 
-/* Garante que os indicadores fiquem acima das camadas de background e imagem do JS */
-/* Adicione isso ao seu CSS para subir os indicadores */
+
+
 #featuredCarousel .carousel-indicators {
-    z-index: 100; /* Garante que fique acima do fundo e da imagem */
+    z-index: 100; 
     margin-bottom: 1rem;
 }
 
-/* Opcional: Estilo para os indicadores ficarem mais visíveis */
+
 #featuredCarousel .carousel-indicators button {
     width: 12px;
     height: 12px;

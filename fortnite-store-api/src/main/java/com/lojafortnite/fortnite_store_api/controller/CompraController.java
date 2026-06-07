@@ -17,17 +17,13 @@ public class CompraController {
     @Autowired
     private CompraService compraService;
 
-    /**
-     * Endpoint protegido para compra de cosméticos.
-     * URL: POST /api/v1/compra/{cosmeticoId}
-     * O @AuthenticationPrincipal extrai o usuário logado (graças ao nosso filtro JWT).
-     */
+    
     @PostMapping("/compra/{cosmeticoId}")
     public ResponseEntity<String> comprar(
             @PathVariable String cosmeticoId,
             @AuthenticationPrincipal Usuario usuario) {
 
-        // Checagem de segurança implícita: Se o usuário for NULL, o filtro JWT já barrou com 401.
+        
         if (usuario == null) {
             return ResponseEntity.status(401).body("Não autorizado.");
         }
@@ -37,15 +33,12 @@ public class CompraController {
             return ResponseEntity.ok("Compra realizada com sucesso! V-bucks restantes: " + usuario.getCreditos());
 
         } catch (RuntimeException e) {
-            // Retorna a mensagem de erro de saldo, posse, etc.
+            
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 
-    /**
-     * Endpoint protegido para devolução de cosméticos.
-     * URL: POST /api/v1/devolucao/{cosmeticoId}
-     */
+    
     @PostMapping("/devolucao/{cosmeticoId}")
     public ResponseEntity<String> devolver(
             @PathVariable String cosmeticoId,

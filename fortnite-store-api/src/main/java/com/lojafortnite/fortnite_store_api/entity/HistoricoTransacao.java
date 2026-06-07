@@ -7,7 +7,7 @@ import lombok.AllArgsConstructor;
 import java.time.LocalDateTime;
 
 
-//Classe entidade historico de transacoes para o BD
+
 @Entity
 @Table(name = "TB_HISTORICO_TRANSACAO")
 @Data

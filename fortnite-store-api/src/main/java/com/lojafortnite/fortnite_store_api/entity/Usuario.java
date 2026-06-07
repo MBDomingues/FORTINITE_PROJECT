@@ -49,31 +49,31 @@ public class Usuario implements UserDetails {
 
     @Override
     public String getPassword() {
-        return this.senha; // Spring Security usará este metodo
+        return this.senha; 
     }
 
     @Override
     public String getUsername() {
-        return this.email; // Nosso "username" é o e-mail
+        return this.email; 
     }
 
     @Override
     public boolean isAccountNonExpired() {
-        return true; // Conta nunca expira
+        return true; 
     }
 
     @Override
     public boolean isAccountNonLocked() {
-        return true; // Conta nunca é bloqueada
+        return true; 
     }
 
     @Override
     public boolean isCredentialsNonExpired() {
-        return true; // Credenciais nunca expiram
+        return true; 
     }
 
     @Override
     public boolean isEnabled() {
-        return true; // Conta sempre habilitada
+        return true; 
     }
 }

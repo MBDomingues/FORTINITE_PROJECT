@@ -3,7 +3,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 
 @Data
-@AllArgsConstructor // Facilita a criação
+@AllArgsConstructor 
 public class LoginResponse {
     private String token;
 }

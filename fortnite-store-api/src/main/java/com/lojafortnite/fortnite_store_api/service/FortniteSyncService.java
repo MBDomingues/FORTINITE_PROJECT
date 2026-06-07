@@ -17,19 +17,19 @@ import java.util.stream.Collectors;
 @Service
 public class FortniteSyncService {
 
-    // --- LISTA DE URLs PARA O CATÁLOGO COMPLETO ---
+
     private static final List<String> URLS_CATALOGO = Arrays.asList(
-            "https://fortnite-api.com/v2/cosmetics/br?language=pt-BR",
-            "https://fortnite-api.com/v2/cosmetics/cars?language=pt-BR",
-            "https://fortnite-api.com/v2/cosmetics/tracks?language=pt-BR",
-            "https://fortnite-api.com/v2/cosmetics/instruments?language=pt-BR",
-            "https://fortnite-api.com/v2/cosmetics/lego?language=pt-BR",
-            "https://fortnite-api.com/v2/cosmetics/beans?language=pt-BR",
-            "https://fortnite-api.com/v2/cosmetics/lego/kits?language=pt-BR"
+            "https:
+            "https:
+            "https:
+            "https:
+            "https:
+            "https:
+            "https:
     );
 
-    private static final String API_URL_COSMETICS_NEW = "https://fortnite-api.com/v2/cosmetics/new?language=pt-BR";
-    private static final String API_URL_SHOP = "https://fortnite-api.com/v2/shop?language=pt-BR";
+    private static final String API_URL_COSMETICS_NEW = "https:
+    private static final String API_URL_SHOP = "https:
 
     private final RestTemplate restTemplate;
     private final CosmeticoRepository cosmeticoRepository;
@@ -80,25 +80,23 @@ public class FortniteSyncService {
         syncAllBaseCosmeticsAndStatus();
     }
 
-    /**
-     * TAREFA PRINCIPAL: Sincroniza TODAS as categorias (BR, Carros, Lego...)
-     */
+
     @Transactional
     public void syncAllBaseCosmeticsAndStatus() {
         System.out.println("INICIANDO: Sincronização de TODAS as categorias...");
         int totalProcessado = 0;
 
-        // Itera sobre a lista de URLs (br, cars, tracks...)
+
         for (String url : URLS_CATALOGO) {
             try {
-                // Usa o DTO de Lista (FortniteApiResponseDTO)
+
                 FortniteApiResponseDTO response = restTemplate.getForObject(url, FortniteApiResponseDTO.class);
 
                 if (response != null && response.getData() != null) {
                     List<CosmeticoApiDTO> listaDeItens = response.getData();
 
                     for (CosmeticoApiDTO dto : listaDeItens) {
-                        saveCosmeticoFromDTO(dto); // Salva ou atualiza o item
+                        saveCosmeticoFromDTO(dto);
                     }
                     totalProcessado += listaDeItens.size();
                 }
@@ -107,13 +105,11 @@ public class FortniteSyncService {
             }
         }
 
-        syncShopAndNewStatusInternal(); // Atualiza preços e status da loja
+        syncShopAndNewStatusInternal();
         System.out.println("SUCESSO: Sincronização completa. Total itens: " + totalProcessado);
     }
 
-    /**
-     * Método auxiliar para salvar um item individual do catálogo
-     */
+
     private void saveCosmeticoFromDTO(CosmeticoApiDTO dto) {
         try {
             Optional<Cosmetico> existing = cosmeticoRepository.findById(dto.getId());
@@ -124,26 +120,24 @@ public class FortniteSyncService {
             cosmetico.setDescricao(dto.getDescription());
             cosmetico.setDataInclusao(dto.getAdded());
 
-            // Usa os métodos auxiliares do DTO para garantir valores
+
             cosmetico.setTipo(dto.getTipoTexto());
             cosmetico.setRaridade(dto.getRaridadeTexto());
             cosmetico.setUrlImagem(dto.getImagemPrincipal());
 
-            // Salva cores da série (Marvel, DC...) se houver
+
             if (dto.getSeries() != null && dto.getSeries().getColors() != null) {
                 cosmetico.setCoresJson(objectMapper.writeValueAsString(dto.getSeries().getColors()));
             }
 
             cosmeticoRepository.save(cosmetico);
         } catch (Exception e) {
-            // Ignora erros pontuais para não parar o loop
+
         }
     }
 
 
-    /**
-     * Sincroniza APENAS o status da Loja e Novos Itens.
-     */
+
     @Transactional
     public void syncShopAndNewStatusInternal() {
         System.out.println("INICIANDO: Atualização de Loja e Novos...");
@@ -151,7 +145,7 @@ public class FortniteSyncService {
             cosmeticoRepository.resetAllIsForSaleStatus();
             cosmeticoRepository.resetAllIsNewStatus();
 
-            // 1. Processa a Loja (Bundles e Itens)
+
             Set<String> itemsOnSale = new HashSet<>();
             FortniteShopResponseDTO shopResponse = restTemplate.getForObject(API_URL_SHOP, FortniteShopResponseDTO.class);
 
@@ -160,11 +154,11 @@ public class FortniteSyncService {
             }
             System.out.println("SUCESSO: Loja sincronizada. Itens à venda: " + itemsOnSale.size());
 
-            // 2. Processa Novos Itens (DTO Aninhado)
+
             FortniteNewApiResponseDTO newResponse = restTemplate.getForObject(API_URL_COSMETICS_NEW, FortniteNewApiResponseDTO.class);
 
             if (newResponse != null && newResponse.getData() != null && newResponse.getData().getItems() != null) {
-                // Pega TODOS os tipos de itens novos (br, cars, tracks...)
+
                 List<CosmeticoApiDTO> novosItens = newResponse.getData().getItems().getTodosOsItens();
 
                 for (CosmeticoApiDTO dto : novosItens) {
@@ -181,7 +175,7 @@ public class FortniteSyncService {
         }
     }
 
-    // --- LÓGICA DE BUNDLE E LOJA ---
+
     private void processShopSection(List<ShopItemDTO> entries, Set<String> itemsOnSale) {
         if (entries == null) return;
 
@@ -191,7 +185,7 @@ public class FortniteSyncService {
 
             if (brItems == null || brItems.isEmpty()) continue;
 
-            // A. É UM BUNDLE
+
             if (entry.getBundle() != null) {
                 try {
                     String bundleId = "BUNDLE_" + entry.getBundle().getName().replaceAll("[^a-zA-Z0-9]", "");
@@ -217,7 +211,7 @@ public class FortniteSyncService {
                     cosmeticoRepository.save(pacote);
                     itemsOnSale.add(bundleId);
 
-                    // Garante que os filhos existam no banco (para poder entregar na compra)
+
                     for (CosmeticoApiDTO brItem : brItems) {
                         saveCosmeticoFromDTO(brItem);
                     }
@@ -238,7 +232,7 @@ public class FortniteSyncService {
                             if (entry.getColors() != null) {
                                 try {
                                     cosmetico.setCoresJson(objectMapper.writeValueAsString(entry.getColors().values()));
-                                } catch (Exception e) {}
+                                } catch (Exception ignored) {}
                             }
 
                             cosmeticoRepository.save(cosmetico);

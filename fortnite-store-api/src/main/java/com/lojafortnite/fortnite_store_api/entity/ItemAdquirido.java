@@ -9,7 +9,7 @@ import org.hibernate.annotations.NaturalId;
 import java.time.LocalDateTime;
 
 
-//Classe entidade item adquirido para o BD
+
 @Entity
 @Table(name = "TB_ITEM_ADQUIRIDO")
 @Data

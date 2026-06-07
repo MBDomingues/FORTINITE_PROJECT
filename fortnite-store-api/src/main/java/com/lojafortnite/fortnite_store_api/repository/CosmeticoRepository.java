@@ -9,13 +9,13 @@ import org.springframework.transaction.annotation.Transactional;
 
 public interface CosmeticoRepository extends JpaRepository<Cosmetico, String>, JpaSpecificationExecutor<Cosmetico> {
 
-    // Metodo para resetar o status 'À Venda' antes da sincronização da loja
+    
     @Transactional
     @Modifying
     @Query("UPDATE Cosmetico c SET c.isForSale = false")
     void resetAllIsForSaleStatus();
 
-    // Metodo para resetar o status 'Novo'
+    
     @Transactional
     @Modifying
     @Query("UPDATE Cosmetico c SET c.isNew = false")

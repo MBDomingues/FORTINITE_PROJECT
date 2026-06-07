@@ -20,10 +20,10 @@ public class UsuarioPerfilResponseDTO {
         this.creditos = usuario.getCreditos();
         this.nome = usuario.getNome();
 
-        // Mapeia a lista de entidades para uma lista de DTOs
+        
         if (usuario.getItensAdquiridos() != null) {
             this.itensAdquiridos = usuario.getItensAdquiridos().stream()
-                    // Pega o 'cosmetico' de dentro do 'itemAdquirido'
+                    
                     .map(itemAdquirido -> new CosmeticoResponseDTO(itemAdquirido.getCosmetico()))
                     .collect(Collectors.toList());
         } else {

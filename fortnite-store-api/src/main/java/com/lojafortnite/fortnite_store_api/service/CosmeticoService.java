@@ -31,7 +31,7 @@ public class CosmeticoService {
         return cosmeticosPage.map(cosmetico -> {
             CosmeticoResponseDTO dto = new CosmeticoResponseDTO(cosmetico);
 
-            // Se o usuário estiver logado, checar se ele possui o item
+
             if (userId != null) {
                 boolean isAdquirido = itemAdquiridoRepository.existsByUsuarioIdAndCosmeticoId(userId, cosmetico.getId());
                 dto.setIsAdquirido(isAdquirido);

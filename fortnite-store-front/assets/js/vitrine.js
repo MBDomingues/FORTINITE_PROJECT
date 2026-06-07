@@ -1,11 +1,8 @@
-/**
- * Classe principal VitrineJS
- * Responsável por gerenciar toda a lógica do front-end da loja.
- */
+
 class VitrineJS {
     constructor(userToken) {
         this.user = userToken || null;
-        this.API_BASE_URL = 'http://130.213.12.104:8080/api/v1';
+        this.API_BASE_URL = 'http:
         
         this.itens = []; 
         this.userData = null;
@@ -31,7 +28,7 @@ class VitrineJS {
         this.init();
     }
 
-    // --- MAPA CENTRALIZADO DE TRADUÇÃO DE TIPOS ---
+    
     _getTipoMapa(outputCase = 'lower') {
         const map = {
             'outfit': 'Traje', 'skin': 'Traje', 'traje': 'Traje',
@@ -52,14 +49,14 @@ class VitrineJS {
         };
 
         if (outputCase === 'api') {
-            // Retorna o mapa formatado com a primeira letra maiúscula (ideal para Query Params na API)
+            
             const apiMap = {};
             for (const key in map) {
                 apiMap[key] = map[key].charAt(0).toUpperCase() + map[key].slice(1);
             }
             return apiMap;
         }
-        // Retorna o mapa em lowercase para comparação local no filter()
+        
         return map;
     }
 
@@ -98,7 +95,7 @@ class VitrineJS {
         this.btnDevolver = document.getElementById('btn-devolver');
         if (this.btnDevolver) this.btnDevolver.addEventListener('click', () => this.handleDevolucaoClick());
         
-        // --- FILTROS ABA LOJA ---
+        
         this.shopTypeFilter = document.getElementById('shop-typeFilter');
         this.shopRarityFilter = document.getElementById('shop-rarityFilter');
         this.shopSearchInput = document.getElementById('shop-searchInput');
@@ -117,7 +114,7 @@ class VitrineJS {
             this.shopClearBtn.addEventListener('click', () => this.limparFiltrosLoja());
         }
         
-        // --- FILTROS ABA TODOS OS ITENS ---
+        
         this.allItemsTab = document.getElementById('all-items-tab');
         this.allItemsGrid = document.getElementById('all-items-grid');
         this.allTypeFilter = document.getElementById('all-typeFilter');
@@ -148,7 +145,7 @@ class VitrineJS {
 
         if (this.allItemsTab) this.allItemsTab.addEventListener('show.bs.tab', () => { if (!this.todosOsItensCarregados) this.buscaTodosOsItens(); });
 
-        // Outras abas
+        
         this.usersTabContainer = document.getElementById('users-tab-container');
         this.usersTab = document.getElementById('users-tab');
         this.usersListContainer = document.getElementById('users-list');
@@ -168,7 +165,7 @@ class VitrineJS {
         this.itemsTabButton = document.getElementById('profile-tab-items-tab'); 
     }
 
-    // --- MÉTODOS DE LIMPEZA ---
+    
     limparFiltrosLoja() {
         if(this.shopSearchInput) this.shopSearchInput.value = '';
         if(this.shopTypeFilter) this.shopTypeFilter.value = '';
@@ -193,7 +190,7 @@ class VitrineJS {
         this.buscaTodosOsItens();
     }
 
-    // --- DADOS E AUTH ---
+    
 
     async verificaUsuario() {
         if (this.user) {
@@ -250,7 +247,7 @@ class VitrineJS {
         document.getElementById('nav-perfil-btn')?.addEventListener('click', () => this.preencherModalPerfil(this.userData));
     }
 
-    // --- RENDERIZAR MEUS ITENS (TAB) ---
+    
 
     renderizarMeusItens() {
         if (!this.myItemsGrid) return;
@@ -366,7 +363,7 @@ class VitrineJS {
         }
     }
 
-    // --- MÉTODOS DE ORDENAÇÃO E AGRUPAMENTO ---
+    
 
     hexToHSL(hex) {
         let result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})/i.exec(hex);
@@ -418,9 +415,7 @@ class VitrineJS {
         });
     }
 
-    /**
-     * @param {Boolean} mostrarBundlesPais - Se true, exibe o Card do Bundle (usado em Meus Itens).
-     */
+    
     organizarItensComBundles(listaTotal, mostrarBundlesPais = false) {
         const processadosIds = new Set();
         const listaFinal = [];
@@ -470,14 +465,14 @@ class VitrineJS {
         return listaFinal;
     }
 
-    // ================================================================
-    // RENDERIZAÇÃO E FILTROS
-    // ================================================================
+    
+    
+    
 
     renderizaItens() {
         if (!this.cosmeticosGrid) return;
         
-        // --- MAPA DE TRADUÇÃO LOCAL ---
+        
         const mapaTipos = {
             'outfit': 'traje', 'skin': 'traje', 'traje': 'traje',
             'backpack': 'acessório para as costas', 'mochila': 'acessório para as costas',
@@ -489,8 +484,8 @@ class VitrineJS {
             'shoes': 'sapatos', 'sapatos': 'sapatos',
             'contrail': 'rastro de fumaça', 'rastro': 'rastro de fumaça',
             'banner': 'estandarte', 'estandarte': 'estandarte',
-            'chassis': 'chassi', 'chassi': 'chassi', // NOVOS
-            'wheel': 'roda', 'roda': 'roda',       // NOVOS
+            'chassis': 'chassi', 'chassi': 'chassi', 
+            'wheel': 'roda', 'roda': 'roda',       
             'decal': 'decalque', 'decalque': 'decalque',
             'music': 'pacote de música', 'musica': 'pacote de música',
             'loading': 'tela de carregamento'
@@ -566,7 +561,7 @@ class VitrineJS {
 
         const url = new URL(baseUrl);
 
-        // --- MAPA DE TRADUÇÃO PARA API (Capitalizado) ---
+        
         const mapaTiposAPI = {
             'outfit': 'Traje', 'skin': 'Traje', 'traje': 'Traje',
             'backpack': 'Acessório para as Costas', 'mochila': 'Acessório para as Costas', 'acessório para as costas': 'Acessório para as Costas',
@@ -850,7 +845,7 @@ class VitrineJS {
         return div;
     }
 
-    // [METODOS DE TRADUÇÃO/AJUSTE DE CORES/ORDERNAÇÃO]
+    
 
     gerarEstiloBackground(cores, retornarHexMaisEscuro = false) {
         if (!cores || !Array.isArray(cores) || cores.length === 0) return retornarHexMaisEscuro ? '#000000' : '';
@@ -917,7 +912,7 @@ class VitrineJS {
         return card;
     }
     
-    // ... (metodos hexToHSL, obterCorOrdenacao, ordenarPorCor, organizarItensComBundles - mantidos)
+    
 
     hexToHSL(hex) {
         let result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})/i.exec(hex);
@@ -1018,12 +1013,12 @@ class VitrineJS {
         return listaFinal;
     }
 
-    // --- RENDERIZAÇÃO E FILTROS ---
+    
 
     renderizaItens() {
         if (!this.cosmeticosGrid) return;
         
-        // MAPA DE TRADUÇÃO LOCAL
+        
         const mapaTipos = {
             'outfit': 'traje', 'skin': 'traje', 'traje': 'traje',
             'backpack': 'acessório para as costas', 'mochila': 'acessório para as costas',
@@ -1112,7 +1107,7 @@ class VitrineJS {
 
         const url = new URL(baseUrl);
 
-        // --- MAPA DE TRADUÇÃO PARA API (Capitalizado) ---
+        
         const mapaTiposAPI = {
             'outfit': 'Traje', 'skin': 'Traje', 'traje': 'Traje',
             'backpack': 'Acessório para as Costas', 'mochila': 'Acessório para as Costas', 'acessório para as costas': 'Acessório para as Costas',
@@ -1132,7 +1127,7 @@ class VitrineJS {
         };
         
         let tipoRaw = this.allTypeFilter ? this.allTypeFilter.value.toLowerCase() : '';
-        // CORRIGIDO: Usa o mapa para garantir que o envio para a API está capitalizado e correto.
+        
         let tipoAPI = mapaTiposAPI[tipoRaw] || (this.allTypeFilter ? this.allTypeFilter.value : '');
 
         const raridadeRaw = this.allRarityFilter ? this.allRarityFilter.value : '';
@@ -1211,7 +1206,7 @@ class VitrineJS {
         this.allItemsGrid.appendChild(fragmento);
     }
 
-    // ... (Métodos auxiliares) ...
+    
 
     gerarHTMLVazio(mensagem) {
         return `<div class="col-12 w-100 d-flex flex-column justify-content-center align-items-center" style="grid-column: 1 / -1; min-height: 200px;"><i class="bi bi-search text-secondary mb-3" style="font-size: 2rem; opacity: 0.5;"></i><p class="text-center text-light fs-5 m-0">${mensagem}</p></div>`;

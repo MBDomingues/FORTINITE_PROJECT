@@ -1,32 +1,29 @@
-/**
- * Classe responsável por gerenciar a autenticação (Login e Cadastro).
- * Controla a interface, validação de formulários e comunicação com a API.
- */
+
 class UserPerfil {
     constructor() {
 
-        this.API_LOGIN = 'http://130.213.12.104:8080/api/v1/auth/login';
-        this.API_CADASTRO = 'http://130.213.12.104:8080/api/v1/auth/cadastro';
+        this.API_LOGIN = 'http:
+        this.API_CADASTRO = 'http:
         
-        // Inicialização das variáveis de estado do formulário
+        
         this.email = '';
         this.password = '';
         this.name = '';
         this.confirmPassword = '';
 
-        // Inicia a captura dos elementos do DOM
+        
         this.buscaBotoes();
     }
 
-    // Mapeia os botões e elementos de erro no HTML
+    
     buscaBotoes() {
         this.loginButton = document.getElementById('btn-login');
         this.registerButton = document.getElementById('btn-cadastro');
         
-        // Elemento para exibir erros na tela de login
+        
         this.errorElement = document.getElementById('error-message'); 
 
-        // Salva o texto original dos botões para restaurar após o "loading"
+        
         if (this.loginButton) {
             this.loginButton.originalText = this.loginButton.innerHTML;
         }
